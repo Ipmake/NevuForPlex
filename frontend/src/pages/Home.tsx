@@ -12,6 +12,7 @@ import { shuffleArray } from "../common/ArrayExtra";
 import MovieItemSlider from "../components/MovieItemSlider";
 import HeroDisplay from "../components/HeroDisplay";
 import { useWatchListCache } from "../states/WatchListCache";
+import { useUserSettings } from "../states/UserSettingsState";
 
 export default function Home() {
   const [libraries, setLibraries] = React.useState<Plex.LibarySection[]>([]);
@@ -22,6 +23,7 @@ export default function Home() {
     null
   );
   const { watchListCache } = useWatchListCache();
+  const { settings } = useUserSettings();
 
   const [loading, setLoading] = React.useState(true);
 
@@ -30,9 +32,15 @@ export default function Home() {
       setLoading(true);
       try {
         const librariesData = await getAllLibraries();
-        setLibraries(librariesData);
 
-        const filteredLibraries = librariesData.filter((lib) =>
+        const enabledLibraries = librariesData.filter((library) => {
+          const key = `LIBRARY_${library.uuid}`;
+          const value = settings[key];
+          return value === undefined || value === "true"; // Default to true
+        });
+        setLibraries(enabledLibraries);
+
+        const filteredLibraries = enabledLibraries.filter((lib) =>
           ["movie", "show"].includes(lib.type)
         );
 
@@ -58,7 +66,7 @@ export default function Home() {
     }
 
     fetchData();
-  }, []);
+  }, [settings]);
   const navigate = useNavigate();
 
   if (loading)

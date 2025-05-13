@@ -41,6 +41,7 @@ import { useSyncInterfaceState } from "./PerPlexedSync";
 import { useSyncSessionState } from "../states/SyncSessionState";
 import { config } from "..";
 import { useBigReader } from "./BigReader";
+import { useUserSettings } from "../states/UserSettingsState";
 
 const BarSide: SxProps<Theme> = {
   display: "flex",
@@ -55,6 +56,7 @@ function Appbar() {
   const location = useLocation();
   const { room } = useSyncSessionState();
   const [, setSearchParams] = useSearchParams();
+  const { settings } = useUserSettings();
 
   const { user } = useUserSessionStore();
 
@@ -78,10 +80,17 @@ function Appbar() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    getAllLibraries().then((res) => {
-      setLibraries(res);
+  getAllLibraries().then((res) => {
+    const filtered = res.filter((library) => {
+      const key = `LIBRARY_${library.uuid}`;
+      const rawValue = settings[key];
+
+      return rawValue === undefined || rawValue === "true";
     });
-  }, []);
+
+    setLibraries(filtered);
+  });
+}, [settings]);
 
   return (
     <AppBar

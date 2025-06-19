@@ -375,6 +375,20 @@ let io = (process.env.DISABLE_NEVU_SYNC === 'true') ? null : new SocketIOServer(
     cors: {
         origin: '*',
     },
+    connectionStateRecovery: {
+        maxDisconnectionDuration: 10000, // 10 seconds
+    }
+});
+
+let remoteIo = new SocketIOServer(server, {
+    cors: {
+        origin: '*',
+    },
+    path: '/nevu-remote',
+    connectionStateRecovery: {
+        maxDisconnectionDuration: 10000, // 10 seconds
+        skipMiddlewares: false, // Skip middlewares for remote connections
+    },
 });
 
 
@@ -383,6 +397,7 @@ app.use((req, res, next) => {
     res.sendFile('index.html', { root: 'www' });
 });
 
-export { app, server, io, deploymentID, prisma };
+export { app, server, io, remoteIo, deploymentID, prisma };
 
 import './common/sync';
+import './common/remote';

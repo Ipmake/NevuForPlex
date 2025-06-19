@@ -30,6 +30,50 @@ export namespace PerPlexed {
         }
     }
 
+    export namespace Remote {
+        export type ActionType = "resume" | "pause" | "seek" | "launch" | "skipMarker";
+
+        export interface RemoteAction {
+            target: string;
+            action: ActionType;
+            data?: {
+                position?: number; // in seconds
+                itemRatingKey?: string; // for launch actions
+            };
+        }
+
+        export interface DeviceID {
+            socket: string;
+            id: string;
+            type: "mobile" | "desktop" | "tv" | "web";
+            friendlyName: string;
+            isControllable: boolean;
+            isRemote: boolean;
+        }
+
+        export interface PlaybackState {
+            deviceID: DeviceID; // the device that is currently playing
+            state: "playing" | "paused" | "stopped";
+            position: number; // in seconds
+            itemRatingKey: string | null; // the rating key of the currently playing item
+            trackID?: number;
+
+            avaliableQualities?: number[]; // optional, available qualities for the item
+            currentQuality?: number; // optional, the currently playing quality
+
+            audioTracks?: MediaTrack[]; // optional, available audio tracks
+            subtitleTracks?: MediaTrack[]; // optional, available subtitle tracks
+
+            skipMarkerText?: string | null; // optional, text for the skip marker
+        }
+
+        export interface MediaTrack {
+            id: number;
+            title: string;
+            selected: boolean;
+        }
+    }
+
     export namespace PlexTV {
         export interface User {
             id: number;

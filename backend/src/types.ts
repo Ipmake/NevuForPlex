@@ -31,7 +31,7 @@ export namespace PerPlexed {
     }
 
     export namespace Remote {
-        export type ActionType = "resume" | "pause" | "seek" | "launch" | "skipMarker";
+        export type ActionType = "resume" | "pause" | "seek" | "launch" | "skipMarker" | "setAudioTrack" | "setSubtitleTrack" | "setQuality";
 
         export interface RemoteAction {
             target: string;
@@ -39,6 +39,8 @@ export namespace PerPlexed {
             data?: {
                 position?: number; // in seconds
                 itemRatingKey?: string; // for launch actions
+                targetTrackID?: number; // for audio and subtitle track actions
+                quality?: number; // for quality actions
             };
         }
 

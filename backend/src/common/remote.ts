@@ -79,5 +79,10 @@ io?.on('connection', async (socket) => {
 
     socket.on("disconnect", () => {
         console.log(`REMOTE [${socket.id}] disconnected`);
+        io.to("remote:" + user.uuid).emit("deviceDisconnected", {
+            socket: socket.id,
+            deviceID: socket.data.deviceID
+        });
+        socket.leave("remote:" + user.uuid);
     });
 });

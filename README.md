@@ -1,7 +1,7 @@
 # NEVU for Plex
 Fixing Plex's old and simple UI.
 
-**PerPlexed is now Nevu!**
+[**Now also available for Android & AndroidTV**](https://github.com/Ipmake/Nevu/discussions/43)
 
 [**Docker Hub**](https://hub.docker.com/r/ipmake/nevu)
 
@@ -23,6 +23,7 @@ Mind that this project is still in development and may be unstable.
 - Modern, Netflix-like UI
 - Seamless Plex integration
 - Play media
+- Automatic track matching (Keep the same audio and subtitle language across episodes)
 - Browse libraries
 - Search for media
 - Watch Together (Nevu Sync)

@@ -6,6 +6,7 @@ import { ThemeProvider } from "@emotion/react";
 import { CssBaseline, createTheme } from "@mui/material";
 import { BrowserRouter } from "react-router-dom";
 import { makeid, uuidv4 } from "./plex/QuickFunctions";
+import { getPlatform, platformCache } from "./common/DesktopApp";
 
 import "@fontsource-variable/quicksand";
 import "@fontsource-variable/rubik";
@@ -36,6 +37,19 @@ export { config };
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
+
+getPlatform().then((platformData) => {
+  if(!platformData) return;
+
+  // make platformData.platform lowercase but capitalize the first letter
+  platformData.platform = platformData.platform.charAt(0).toUpperCase() + platformData.platform.slice(1).toLowerCase();
+
+  platformCache.platform = platformData;
+
+  if (platformCache.platform)
+    console.log("Platform detected:", platformCache.platform);
+  else console.warn("Platform detection failed.");
+});
 
 root.render(
   <ThemeProvider
@@ -99,7 +113,7 @@ root.render(
           styleOverrides: {
             root: {
               height: "100vh",
-              zIndex: 200
+              zIndex: 200,
             },
           },
         },

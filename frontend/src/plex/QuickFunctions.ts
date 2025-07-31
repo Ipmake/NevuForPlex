@@ -1,4 +1,5 @@
 import { ProxiedRequest } from "../backendURL";
+import { platformCache } from "../common/DesktopApp";
 import { useSessionStore } from "../states/SessionState";
 
 export async function authedGet(url: string) {
@@ -52,8 +53,8 @@ export function getXPlexProps() {
         "X-Plex-Product": "NEVU",
         "X-Plex-Version": "0.1.0",
         "X-Plex-Client-Identifier": localStorage.getItem("clientID"),
-        "X-Plex-Platform": getBrowserName(),
-        "X-Plex-Platform-Version": getBrowserVersion(),
+        "X-Plex-Platform": platformCache.platform?.platform ?? getBrowserName(),
+        "X-Plex-Platform-Version": platformCache.platform?.version ?? getBrowserVersion(),
         "X-Plex-Features": "external-media,indirect-media,hub-style-list",
         "X-Plex-Model": "bundled",
         "X-Plex-Device": getBrowserName(),

@@ -33,9 +33,7 @@ const status: PerPlexed.Status = {
 
 const app = express();
 const prisma = new PrismaClient();
-const discovery = new Discovery({
-    port: parseInt(process.env.PORT || '3000'),
-});
+const discovery = new Discovery();
 
 console.log(`Deployment ID: ${deploymentID}`);
 

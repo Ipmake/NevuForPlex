@@ -12,6 +12,7 @@ RUN npx tsc
 RUN chmod +x /app/run.sh
 
 EXPOSE 3000
+EXPOSE 44201/udp
 VOLUME /app/data
 
 COPY frontend/build/ /app/www/

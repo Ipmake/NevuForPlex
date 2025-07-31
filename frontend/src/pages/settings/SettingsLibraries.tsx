@@ -53,6 +53,11 @@ function SettingsLibraries() {
 
       <Box sx={{ mt: 2, display: "flex", flexDirection: "column", gap: 2 }}>
 
+        <Typography variant="subtitle1">
+          Enable or disable libraries to show throughout Nevu. <br />
+          Disabled libraries will not be shown in the home page, recommendations, search results, or any other place.
+        </Typography>
+
         {libraries.map((library) => {
             const key = `LIBRARY_${library.uuid}`;
             const rawValue = settings[key];

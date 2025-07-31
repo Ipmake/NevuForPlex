@@ -19,3 +19,31 @@ model UserOption {
   @@id([userUid, key])
   @@unique([userUid, key])
 }
+
+model NevuReviewsLocal {
+  itemID String
+  userID String
+  created_at DateTime @default(now())
+
+  rating Int
+  message String @default("No review text provided")
+  spoilers Boolean @default(false)
+
+  user NevuReviewsLocalUsers @relation(fields: [userID], references: [id])
+
+  @@id([itemID, userID])
+  @@unique([itemID, userID])
+}
+
+model NevuReviewsLocalUsers {
+  id String @default(cuid())
+  created_at DateTime @default(now())
+
+  username String
+  avatar String
+
+  @@id([id])
+  @@unique([id])
+
+  reviews NevuReviewsLocal[]
+}

@@ -47,4 +47,27 @@ declare namespace PerPlexed {
             avatar: string;
         }
     }
+
+    namespace Reviews {
+        interface Review {
+            itemID: string;
+            userID: string;
+            created_at: string;
+            rating: number;
+            message: string;
+            spoilers: boolean;
+            visibility: "GLOBAL" | "LOCAL";
+            user: ReviewUser;
+        }
+
+        interface ReviewUser {
+            id: string;
+            username: string;
+            avatar: string;
+        }
+
+        interface ReviewResponse {
+            error?: string;
+        }
+    }
 }

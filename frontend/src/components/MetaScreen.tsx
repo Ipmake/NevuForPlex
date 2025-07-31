@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Checkbox,
+  Chip,
   CircularProgress,
   Collapse,
   Divider,
@@ -18,6 +19,7 @@ import {
   Rating,
   Select,
   Skeleton,
+  Stack,
   Tooltip,
   Typography,
 } from "@mui/material";
@@ -56,6 +58,8 @@ import { PlexCommunity } from "../plex/plexCommunity";
 import moment from "moment";
 import { getBackendURL } from "../backendURL";
 import { queryBuilder } from "../plex/QuickFunctions";
+import AddReviewModal from "./modals/AddReviewModal";
+import { getNevuReviews } from "../common/NevuReviews";
 
 function MetaScreen() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -129,9 +133,9 @@ function MetaScreen() {
       return;
 
     setPreviewVidURL(
-      `${getBackendURL()}/dynproxy${data?.Extras?.Metadata?.[0]?.Media?.[0]?.Part?.[0]?.key.split(
-        "?"
-      )[0]}?${queryBuilder({
+      `${getBackendURL()}/dynproxy${
+        data?.Extras?.Metadata?.[0]?.Media?.[0]?.Part?.[0]?.key.split("?")[0]
+      }?${queryBuilder({
         "X-Plex-Token": localStorage.getItem("accessToken"),
         ...Object.fromEntries(
           new URL(
@@ -1367,9 +1371,12 @@ function MetaPage3(data: Plex.Metadata | undefined) {
 }
 
 function MetaPageReviews({ data }: { data: Plex.Metadata | undefined }) {
-  const [reviews, setReviews] = useState<PlexCommunity.ReviewsData | null>(
-    null
-  );
+  const [reviews, setReviews] = useState<
+    | (PlexCommunity.ReviewsData & {
+        nevuReviews: PerPlexed.Reviews.Review[];
+      })
+    | null
+  >(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -1379,7 +1386,7 @@ function MetaPageReviews({ data }: { data: Plex.Metadata | undefined }) {
     if (!metaID) return;
 
     PlexCommunity.getUserReviews(metaID)
-      .then((res) => {
+      .then(async (res) => {
         if (!res) return;
         res.recentReviews.nodes =
           res?.recentReviews.nodes.filter(
@@ -1388,7 +1395,10 @@ function MetaPageReviews({ data }: { data: Plex.Metadata | undefined }) {
                 (topReview) => topReview.id === review.id
               ) === undefined
           ) ?? [];
-        setReviews(res);
+
+        const nevuReviews = await getNevuReviews(data.guid);
+
+        setReviews({ ...res, nevuReviews });
       })
       .finally(() => {
         setLoading(false);
@@ -1398,7 +1408,8 @@ function MetaPageReviews({ data }: { data: Plex.Metadata | undefined }) {
   const renderReviewsSection = (
     title: string,
     reviewNodes: any[] | undefined,
-    isEmpty: boolean
+    isEmpty: boolean,
+    isNevu: boolean = false
   ) => {
     if (isEmpty) return null;
     return (
@@ -1414,94 +1425,123 @@ function MetaPageReviews({ data }: { data: Plex.Metadata | undefined }) {
 
         {reviewNodes && reviewNodes.length > 0 ? (
           <Grid container spacing={3} sx={{ width: "100%" }}>
-            {reviewNodes?.map((review) => (
-              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={review.id}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 2.5,
-                    bgcolor: (theme) =>
-                      alpha(theme.palette.background.paper, 0.4),
-                    borderRadius: 2,
-                    height: "100%",
-                    transition: "all 0.2s ease",
-                    "&:hover": {
-                      bgcolor: (theme) =>
-                        alpha(theme.palette.background.paper, 0.6),
-                      transform: "translateY(-4px)",
-                      boxShadow: (theme) =>
-                        `0 8px 16px -2px ${alpha(
-                          theme.palette.common.black,
-                          0.15
-                        )}`,
-                    },
-                  }}
-                >
-                  <Box
+            {reviewNodes?.map((review, index) => {
+              const username = isNevu
+                ? (review as PerPlexed.Reviews.Review).user.username
+                : (review as PlexCommunity.ActivityReview).userV2?.username;
+
+              const avatarSrc = isNevu
+                ? (review as PerPlexed.Reviews.Review).user.avatar
+                : (review as PlexCommunity.ActivityReview).userV2?.avatar;
+
+              const hasSpoilers = isNevu
+                ? (review as PerPlexed.Reviews.Review).spoilers
+                : (review as PlexCommunity.ActivityReview).hasSpoilers;
+
+              const reviewDate = isNevu
+                ? (review as PerPlexed.Reviews.Review).created_at
+                : (review as PlexCommunity.ActivityReview).date;
+
+              return (
+                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={title + index}>
+                  <Paper
+                    elevation={0}
                     sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1.5,
-                      mb: 2,
-                      position: "relative",
+                      p: 2.5,
+                      bgcolor: (theme) =>
+                        alpha(theme.palette.background.paper, 0.4),
+                      borderRadius: 2,
+                      height: "100%",
+                      transition: "all 0.2s ease",
+                      "&:hover": {
+                        bgcolor: (theme) =>
+                          alpha(theme.palette.background.paper, 0.6),
+                        transform: "translateY(-4px)",
+                        boxShadow: (theme) =>
+                          `0 8px 16px -2px ${alpha(
+                            theme.palette.common.black,
+                            0.15
+                          )}`,
+                      },
                     }}
                   >
-                    <Avatar
-                      src={review.userV2?.avatar}
-                      sx={{ width: 42, height: 42, boxShadow: 1 }}
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 1.5,
+                        mb: 2,
+                        position: "relative",
+                      }}
                     >
-                      {review.userV2?.username?.charAt(0) || "U"}
-                    </Avatar>
-                    <Box sx={{ flex: 1 }}>
-                      <Typography fontWeight="medium" noWrap>
-                        {review.userV2?.username || "Anonymous User"}
-                      </Typography>
-                      <Box sx={{ display: "flex", alignItems: "center" }}>
-                        <Rating
-                          value={(review.reviewRating ?? review.rating) / 2}
-                          precision={0.5}
-                          size="small"
-                          readOnly
-                          sx={{ color: (theme) => theme.palette.primary.main }}
-                        />
-                        <Typography
-                          variant="caption"
-                          sx={{ ml: 1, color: "text.secondary" }}
-                        >
-                          {moment(new Date(review.date)).fromNow()}
-                        </Typography>
+                      <Avatar
+                        src={avatarSrc}
+                        sx={{ width: 42, height: 42, boxShadow: 1 }}
+                      >
+                        {username?.charAt(0) || "U"}
+                      </Avatar>
+                      <Box sx={{ flex: 1 }}>
+                        <Stack spacing={0.5} justifyContent={"flex-start"} direction={"row"} alignItems="center">
+                          <Typography fontWeight="medium" noWrap>
+                            {username || "Anonymous User"}
+                          </Typography>
+                          {review.visibility === "GLOBAL" && (
+                            <Chip label="Global" size="small" color="info" />
+                          )}
+                          {review.visibility === "LOCAL" && (
+                            <Chip label="Local" size="small" color="info" />
+                          )}
+                        </Stack>
+
+                        <Box sx={{ display: "flex", alignItems: "center" }}>
+                          <Rating
+                            value={(review.reviewRating ?? review.rating) / 2}
+                            precision={0.5}
+                            size="small"
+                            readOnly
+                            sx={{
+                              color: (theme) => theme.palette.primary.main,
+                            }}
+                          />
+                          <Typography
+                            variant="caption"
+                            sx={{ ml: 1, color: "text.secondary" }}
+                          >
+                            {moment(new Date(reviewDate)).fromNow()}
+                          </Typography>
+                        </Box>
                       </Box>
                     </Box>
-                  </Box>
 
-                  <Divider sx={{ mb: 2 }} />
+                    <Divider sx={{ mb: 2 }} />
 
-                  <Typography
-                    sx={{
-                      fontSize: "0.95rem",
-                      color: "text.secondary",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                      display: "-webkit-box",
-                      WebkitLineClamp: 5,
-                      WebkitBoxOrient: "vertical",
-                      lineHeight: 1.6,
+                    <Typography
+                      sx={{
+                        fontSize: "0.95rem",
+                        color: "text.secondary",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 5,
+                        WebkitBoxOrient: "vertical",
+                        lineHeight: 1.6,
 
-                      ...(review.hasSpoilers && {
-                        filter: "blur(10px)",
-                        transition: "filter 0.2s ease",
-                        "&:hover": {
-                          filter: "blur(0)",
-                          transition: "filter 3s ease",
-                        },
-                      }),
-                    }}
-                  >
-                    {review.message || "No review text provided."}
-                  </Typography>
-                </Paper>
-              </Grid>
-            ))}
+                        ...(hasSpoilers && {
+                          filter: "blur(10px)",
+                          transition: "filter 0.2s ease",
+                          "&:hover": {
+                            filter: "blur(0)",
+                            transition: "filter 3s ease",
+                          },
+                        }),
+                      }}
+                    >
+                      {review.message || "No review text provided."}
+                    </Typography>
+                  </Paper>
+                </Grid>
+              );
+            })}
           </Grid>
         ) : (
           <Box
@@ -1528,7 +1568,8 @@ function MetaPageReviews({ data }: { data: Plex.Metadata | undefined }) {
   const totalReviews =
     (reviews?.topReviews?.nodes.length ?? 0) +
     (reviews?.friendReviews?.nodes.length ?? 0) +
-    (reviews?.recentReviews?.nodes.length ?? 0);
+    (reviews?.recentReviews?.nodes.length ?? 0) +
+    (reviews?.nevuReviews?.length ?? 0);
 
   return (
     <Box
@@ -1602,6 +1643,13 @@ function MetaPageReviews({ data }: { data: Plex.Metadata | undefined }) {
         </Box>
       ) : (
         <Box sx={{ width: "100%" }}>
+          {renderReviewsSection(
+            "NEVU Reviews",
+            reviews.nevuReviews,
+            !reviews.nevuReviews.length,
+            true
+          )}
+
           {renderReviewsSection(
             "Recent Reviews",
             reviews.recentReviews?.nodes,
@@ -1731,10 +1779,18 @@ function RatingButton({ item }: { item: Plex.Metadata }): JSX.Element {
   const [rating, setRating] = useState<number | null>(
     (item.userRating && item.userRating / 2) ?? null
   );
+
+  const [addReviewModalOpen, setAddReviewModalOpen] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   return (
     <>
+      {addReviewModalOpen && item && (
+        <AddReviewModal
+          item={item}
+          onClose={() => setAddReviewModalOpen(false)}
+        />
+      )}
       <Popover
         anchorEl={anchorEl}
         open={anchorEl !== null}
@@ -1756,6 +1812,7 @@ function RatingButton({ item }: { item: Plex.Metadata }): JSX.Element {
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
+            gap: 1,
             backgroundColor: (theme) => theme.palette.background.paper,
           },
         }}
@@ -1783,6 +1840,23 @@ function RatingButton({ item }: { item: Plex.Metadata }): JSX.Element {
             setMediaRating(-1, item.ratingKey);
           }}
         />
+
+        <Button
+          variant="contained"
+          size="small"
+          onClick={() => {
+            setAddReviewModalOpen(true);
+            setAnchorEl(null);
+          }}
+          sx={{
+            height: rating ? "38px" : "0px",
+            opacity: rating ? 1 : 0,
+            overflow: "hidden",
+            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+          }}
+        >
+          Add Review
+        </Button>
       </Popover>
       <Button
         variant="contained"

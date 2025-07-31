@@ -53,7 +53,6 @@ function Settings() {
       >
         <SettingsDivider title="General" />
         <SettingsItem title="About" link="/settings/info" />
-
         <SettingsDivider title="Experience" />
         <SettingsItem title="Playback" link="/settings/experience-playback" />
         <SettingsItem title="Recommendations" link="/settings/experience-recommendations" />

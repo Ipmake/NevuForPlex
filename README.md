@@ -40,7 +40,7 @@ The easiest way to run Nevu is to use Docker. You can use the following command 
 
 ```bash
 docker volume create nevu_data
-docker run --name nevu -p 3000:3000 -v nevu_data:/data -e PLEX_SERVER=http://your-plex-server:32400 ipmake/nevu
+docker run --name nevu -p 3000:3000 -p 44201:44201/udp -v nevu_data:/data -e PLEX_SERVER=http://your-plex-server:32400 ipmake/nevu
 ```
 
 ### Docker Compose
@@ -54,6 +54,7 @@ services:
     container_name: nevu
     ports:
       - "3000:3000"
+      - "44201:44201/udp"
     volumes:
       - nevu_data:/data
     environment:

@@ -23,11 +23,13 @@ export default function Home() {
     null
   );
   const { watchListCache } = useWatchListCache();
-  const { settings } = useUserSettings();
+  const { settings, loaded: settingsLoaded } = useUserSettings();
 
   const [loading, setLoading] = React.useState(true);
 
   useEffect(() => {
+    if(!settingsLoaded) return;
+
     async function fetchData() {
       setLoading(true);
       try {

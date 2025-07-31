@@ -1,6 +1,5 @@
 import axios from "axios";
 import { useUserSessionStore } from "../states/UserSession";
-import { getBrowserName } from "./QuickFunctions";
 
 export namespace PlexCommunity {
     export interface ReviewsResponse {

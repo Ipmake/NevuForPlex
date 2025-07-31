@@ -75,6 +75,7 @@ docker-compose up -d
 | `DISABLE_TLS_VERIFY`     | true/false | No       | If set to true, the proxy will not check any https ssl certificates         |
 | `DISABLE_NEVU_SYNC`      | true/false | No       | If set to true, Nevu sync (watch together) will be disabled                 |
 | `DISABLE_REQUEST_LOGGING`| true/false | No       | If set to true, the server will not log any requests                        |
+| `DISABLE_GLOBAL_REVIEWS` | true/false | No       | If set to true, nevu global reviews will be disabled                        |
 
 
 

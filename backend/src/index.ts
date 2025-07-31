@@ -20,8 +20,11 @@ import httpProxy from 'http-proxy';
     * DISABLE_TLS_VERIFY?: If set to true, the proxy will not check any https ssl certificates
     * DISABLE_NEVU_SYNC?: If set to true, NEVU sync (watch together) will be disabled
     * DISABLE_REQUEST_LOGGING?: If set to true, the server will not log any requests
+    * DISABLE_GLOBAL_REVIEWS?: If set to true, nevu community reviews will be disabled
 **/
 const deploymentID = randomBytes(8).toString('hex');
+
+const nevuHubUrl = "https://gnuqknwmixeunfmeseep.supabase.co/functions/v1/"
 
 const status: PerPlexed.Status = {
     ready: false,
@@ -265,6 +268,230 @@ app.post('/user/options', async (req, res) => {
     res.send(option);
 });
 
+app.get('/reviews', async (req, res) => {
+    const { itemID, userID } = req.query;
+    const plexToken = req.headers['x-plex-token'];
+
+    if (!plexToken) return res.status(401).send('Unauthorized');
+    const user = await CheckPlexUser(plexToken as string);
+    if (!user) return res.status(401).send('Unauthorized user');
+
+    if (!itemID || typeof itemID !== 'string' || !itemID.startsWith("plex://")) return res.status(400).send({
+        error: "Invalid itemID",
+    });
+    if (userID && (typeof userID !== 'string')) return res.status(400).send({
+        error: "Invalid userID",
+    });
+
+    try {
+        const reviews = (await prisma.nevuReviewsLocal.findMany({
+            where: {
+                itemID: itemID as string,
+                ...(userID && { userID: userID as string }),
+            },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        username: true,
+                        avatar: true,
+                    }
+                },
+            },
+            orderBy: {
+                created_at: 'desc',
+            }
+        })).map((review) => ({
+            ...review,
+            visibility: "LOCAL", // Set visibility to NEVU for local reviews
+        }))
+
+        if (process.env.DISABLE_GLOBAL_REVIEWS !== 'true') {
+            const globalReviews = await axios.post(`${nevuHubUrl}review-get`, {
+                itemID: itemID as string,
+                ...(userID && { userID: userID as string }),
+            }, {
+                headers: {
+                    'x-plex-token': plexToken as string,
+                }
+            });
+
+            reviews.push(...globalReviews.data.data.map((review: any) => ({
+                ...review,
+                visibility: "GLOBAL", // Set visibility to GLOBAL for NevuHUB reviews
+            })));
+        }
+
+        reviews.sort((a, b) => {
+            const aDate = new Date(a.created_at).getTime();
+            const bDate = new Date(b.created_at).getTime();
+            return bDate - aDate; // Sort by most recent first
+        })
+
+        res.send(reviews);
+    } catch (error) {
+        console.error('Error fetching reviews:', error);
+        res.status(500).send({ error: 'Internal server error' });
+    }
+});
+
+app.post('/reviews', async (req, res) => {
+    const { itemID, message, rating, spoilers, visibility } = req.body;
+    const plexToken = req.headers['x-plex-token'];
+
+    if (!plexToken) return res.status(401).send('Unauthorized');
+    const user = await CheckPlexUser(plexToken as string);
+    if (!user) return res.status(401).send('Unauthorized user');
+
+    if (!itemID || typeof itemID !== 'string' || !itemID.startsWith("plex://")) return res.status(400).send({
+        error: "Invalid itemID",
+    });
+    if (!message || typeof message !== 'string' || message.trim().length === 0 || message.length > 256) return res.status(400).send({
+        error: "Invalid message",
+    });
+    if (rating && (typeof rating !== 'number' || rating < 0 || rating > 10)) return res.status(400).send({
+        error: "Invalid rating",
+    });
+    if (!visibility || !["GLOBAL", "LOCAL"].includes(visibility)) return res.status(400).send({
+        error: "Invalid visibility",
+    });
+
+    if (visibility === "GLOBAL" && process.env.DISABLE_GLOBAL_REVIEWS === 'true') {
+        return res.status(403).send({
+            error: "Global reviews are disabled",
+        });
+    }
+
+    let error: string | false = false;
+
+    try {
+        switch (visibility) {
+            case "GLOBAL":
+                const res = await axios.post(`${nevuHubUrl}review-update`, {
+                    itemID: itemID as string,
+                    userID: user.uuid,
+                    message: message.trim(),
+                    rating: rating,
+                    spoilers: spoilers,
+                }, {
+                    headers: {
+                        'x-plex-token': plexToken as string,
+                    }
+                }).catch((error: any) => {
+                    console.error("Failed to update Nevu review:", error);
+                    return error.response || { data: { error: "Failed to update review" } };
+                });
+
+                if (res.data.error) error = res.data.error;
+                break;
+            case "LOCAL":
+                await prisma.nevuReviewsLocalUsers.upsert({
+                    where: {
+                        id: user.uuid,
+                    },
+                    create: {
+                        id: user.uuid,
+                        username: user.friendlyName || user.username,
+                        avatar: user.thumb || '',
+                    },
+                    update: {
+                        username: user.friendlyName || user.username,
+                        avatar: user.thumb || '',
+                    },
+                })
+
+                await prisma.nevuReviewsLocal.upsert({
+                    where: {
+                        itemID_userID: {
+                            itemID: itemID as string,
+                            userID: user.uuid,
+                        }
+                    },
+                    create: {
+                        itemID: itemID as string,
+                        userID: user.uuid,
+                        message: message.trim(),
+                        rating: rating ?? null,
+                        spoilers: spoilers ?? null,
+                    },
+                    update: {
+                        message: message.trim(),
+                        rating: rating ?? null,
+                        spoilers: spoilers ?? null,
+                    }
+                });
+                break;
+        }
+
+        res.setHeader('Cache-Control', 'public, max-age=3600');
+        res.setHeader('Content-Type', 'application/json');
+
+        res.send({
+            error,
+        });
+    } catch (error) {
+        console.error('Error creating review:', error);
+        res.status(500).send({ error: error instanceof Error ? error.message : 'Internal server error' });
+    }
+})
+
+app.delete('/reviews', async (req, res) => {
+    const { itemID, visibility } = req.query;
+
+    const plexToken = req.headers['x-plex-token'];
+
+    if (!plexToken) return res.status(401).send('Unauthorized');
+    const user = await CheckPlexUser(plexToken as string);
+    if (!user) return res.status(401).send('Unauthorized user');
+    if (!itemID || typeof itemID !== 'string' || !itemID.startsWith("plex://")) return res.status(400).send({
+        error: "Invalid itemID",
+    });
+    if (visibility && !["GLOBAL", "LOCAL"].includes(visibility.toString())) return res.status(400).send({
+        error: "Invalid visibility",
+    });
+
+    if (visibility === "GLOBAL" && process.env.DISABLE_GLOBAL_REVIEWS === 'true') {
+        return res.status(403).send({
+            error: "Global reviews are disabled",
+        });
+    }
+
+    let error: string | false = false;
+
+    try {
+        switch (visibility) {
+            case "GLOBAL":
+                const res = await axios.post(`${nevuHubUrl}review-delete`, {
+                    itemID: itemID as string
+                }, {
+                    headers: {
+                        'x-plex-token': plexToken as string,
+                    }
+                });
+
+                if (res.data.error) return error = res.data.error;
+                break;
+            case "LOCAL":
+                await prisma.nevuReviewsLocal.delete({
+                    where: {
+                        itemID_userID: {
+                            itemID: itemID as string,
+                            userID: user.uuid,
+                        }
+                    }
+                });
+                break;
+        }
+
+        res.send({
+            error,
+        });
+    } catch (error) {
+        console.error('Error deleting review:', error);
+        res.status(500).send({ error: error instanceof Error ? error.message : 'Internal server error' });
+    }
+})
+
 app.use('/dynproxy/*', (req, res) => {
     const url = req.originalUrl.split('/dynproxy')[1];
     if (!url) return res.status(400).send('Bad request');
@@ -375,6 +602,20 @@ let io = (process.env.DISABLE_NEVU_SYNC === 'true') ? null : new SocketIOServer(
     cors: {
         origin: '*',
     },
+    connectionStateRecovery: {
+        maxDisconnectionDuration: 10000, // 10 seconds
+    }
+});
+
+let remoteIo = new SocketIOServer(server, {
+    cors: {
+        origin: '*',
+    },
+    path: '/nevu-remote',
+    connectionStateRecovery: {
+        maxDisconnectionDuration: 10000, // 10 seconds
+        skipMiddlewares: false, // Skip middlewares for remote connections
+    },
 });
 
 
@@ -383,6 +624,8 @@ app.use((req, res, next) => {
     res.sendFile('index.html', { root: 'www' });
 });
 
-export { app, server, io, deploymentID, prisma };
+export { app, server, io, remoteIo, deploymentID, prisma };
 
 import './common/sync';
+import './common/remote'; import { error } from 'console';
+

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useUserSessionStore } from "../states/UserSession";
+import { getBrowserName } from "./QuickFunctions";
 
 export namespace PlexCommunity {
     export interface ReviewsResponse {
@@ -25,6 +26,8 @@ export namespace PlexCommunity {
         hasNextPage: boolean;
     }
 
+    export type ActivityPrivacy = "GLOBAL" | "NEVU";
+
     export interface ActivityReview {
         __typename: "ActivityReview";
         commentCount: number;
@@ -32,7 +35,7 @@ export namespace PlexCommunity {
         id: string;
         isMuted: boolean;
         isPrimary: boolean | null;
-        privacy: "ANYONE" | string;
+        privacy: ActivityPrivacy;
         reaction: string | null;
         reactionsCount: string;
         reactionsTypes: string[];
@@ -43,6 +46,33 @@ export namespace PlexCommunity {
         message: string;
         updatedAt: string | null;
         status: "PUBLISHED" | string;
+    }
+
+    export interface ActivityRating {
+        __typename: "ActivityRating";
+        commentCount: number;
+        date: string;
+        id: string;
+        isMuted: boolean;
+        isPrimary: boolean | null;
+        privacy: ActivityPrivacy;
+        reaction: string | null;
+        reactionsCount: string;
+        reactionsTypes: string[];
+        metadataItem: MetadataItem;
+        userV2: UserV2;
+        rating: number;
+        reviewRating?: number; // Optional, used in reviews
+        hasSpoilers?: boolean;
+        message?: string;
+    }
+
+    export interface ActivityRatingUpdateResponse {
+        data?: unknown;
+        errors?: {
+            message: string;
+            locations: { line: number; column: number }[];
+        }[];
     }
 
     export interface MetadataImages {

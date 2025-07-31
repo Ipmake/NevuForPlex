@@ -21,7 +21,7 @@ import {
   ListItemIcon,
   IconButton,
 } from "@mui/material";
-import React, { JSX } from "react";
+import React, { JSX, memo, use, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import {
   getTranscodeImageURL,
@@ -83,6 +83,8 @@ function MovieItem({
     mouseY: number;
   } | null>(null);
 
+  const [hovered, setHovered] = React.useState(false);
+  const hoveredRef = React.useRef(hovered);
   const [previewPlaybackState, setPreviewPlaybackState] = React.useState({
     url: "",
     playing: false,
@@ -90,6 +92,47 @@ function MovieItem({
   const hoverTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(
     null
   );
+
+  useEffect(() => {
+    if (hovered) {
+      hoverTimerRef.current = setTimeout(async () => {
+        const data = await getLibraryMeta(item.ratingKey);
+        if (!data) return;
+        if (hoveredRef.current === false) return;
+
+        const mediaURL = data.Extras?.Metadata?.[0]?.Media?.[0]?.Part[0]?.key;
+        if (!mediaURL) return;
+        setPreviewPlaybackState({
+          url: `${getBackendURL()}/dynproxy${
+            mediaURL.split("?")[0]
+          }?${queryBuilder({
+            "X-Plex-Token": localStorage.getItem("accessToken"),
+            ...Object.fromEntries(
+              new URL("http://localhost:3000" + mediaURL).searchParams.entries()
+            ),
+          })}`,
+          playing: true,
+        });
+      }, 1000);
+    } else {
+      if (hoverTimerRef.current) {
+        clearTimeout(hoverTimerRef.current);
+        hoverTimerRef.current = null;
+      }
+      setPreviewPlaybackState({ url: "", playing: false });
+    }
+
+    return () => {
+      if (hoverTimerRef.current) {
+        clearTimeout(hoverTimerRef.current);
+        hoverTimerRef.current = null;
+      }
+    };
+  }, [hovered]);
+
+  useEffect(() => {
+    hoveredRef.current = hovered;
+  }, [hovered]);
 
   const handleClose = () => {
     setContextMenu(null);
@@ -349,7 +392,7 @@ function MovieItem({
 
           "&:hover": {
             transform: "scale(1.08)",
-            transition: "all 0.4s ease",
+            transition: "all 0.4s cubic-bezier(0.25,0.10,0.25,1.00)",
             zIndex: 10,
             boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.3)",
             position: "relative",
@@ -367,7 +410,7 @@ function MovieItem({
             opacity: 1,
           },
 
-          transition: "all 0.4s ease, transform 0.4s ease",
+          transition: "all 0.4s cubic-bezier(0.25,0.10,0.25,1.00), transform 0.4s cubic-bezier(0.25,0.10,0.25,1.00)",
           cursor: "pointer",
         }}
         onContextMenu={(e) => {
@@ -405,34 +448,10 @@ function MovieItem({
           }
         }}
         onMouseEnter={() => {
-          if (!item.ratingKey) return;
-          if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
-
-          hoverTimerRef.current = setTimeout(async () => {
-            const data = await getLibraryMeta(item.ratingKey);
-            if (!data) return;
-
-            const mediaURL =
-              data.Extras?.Metadata?.[0]?.Media?.[0]?.Part[0]?.key;
-            if (!mediaURL) return;
-            setPreviewPlaybackState({
-              url: `${getBackendURL()}/dynproxy${mediaURL.split("?")[0]}?${queryBuilder({
-                "X-Plex-Token": localStorage.getItem("accessToken"),
-                ...Object.fromEntries(
-                  new URL("http://localhost:3000" + mediaURL).searchParams.entries()
-                ),
-              })}`,
-              playing: true,
-            });
-          }, 1000);
+          setHovered(true);
         }}
         onMouseLeave={() => {
-          if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
-          setPreviewPlaybackState({
-            url: "",
-            playing: false,
-          });
-          return;
+          setHovered(false);
         }}
       >
         <Box
@@ -458,7 +477,7 @@ function MovieItem({
               left: 0,
               top: 0,
               opacity: previewPlaybackState.playing ? 1 : 0,
-              transition: "all 2s ease",
+              transition: "all 2s cubic-bezier(0.25,0.10,0.25,1.00)",
               backgroundColor: previewPlaybackState.playing
                 ? "rgba(18, 18, 22, 0.9)"
                 : "transparent",
@@ -495,7 +514,7 @@ function MovieItem({
             sx={{
               backgroundColor: "#00000088",
               opacity: previewPlaybackState.url ? 1 : 0,
-              transition: "all 1s ease",
+              transition: "all 1s cubic-bezier(0.25,0.10,0.25,1.00)",
               position: "absolute",
               bottom: "10px",
               right: "10px",
@@ -573,7 +592,7 @@ function MovieItem({
             justifyContent: "flex-end",
             padding: "16px",
             userSelect: "none",
-            transition: "all 0.4s ease",
+            transition: "all 0.4s cubic-bezier(0.25,0.10,0.25,1.00)",
             transform: "translateX(0%)",
             position: "relative",
             zIndex: 5,
@@ -629,7 +648,7 @@ function MovieItem({
                 color: "#FFFFFF",
                 opacity: 0.75,
                 mb: 1,
-                transition: "opacity 0.4s ease",
+                transition: "opacity 0.4s cubic-bezier(0.25,0.10,0.25,1.00)",
                 "&:hover": {
                   opacity: 1,
                   textDecoration: "none",
@@ -749,7 +768,7 @@ function MovieItem({
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            transition: "all 0.4s ease",
+            transition: "all 0.4s cubic-bezier(0.25,0.10,0.25,1.00)",
           }}
         >
           <Box
@@ -776,7 +795,7 @@ function MovieItem({
                   backgroundColor: (theme) => theme.palette.primary.dark,
                 },
                 gap: 0.5,
-                transition: "all 0.4s ease-in-out",
+                transition: "all 0.4s cubic-bezier(0.25,0.10,0.25,1.00)",
                 padding: "0px 10px",
                 fontSize: "13px",
                 borderRadius: "6px",
@@ -805,7 +824,7 @@ function MovieItem({
   );
 }
 
-export default MovieItem;
+export default memo(MovieItem);
 
 export function WatchListButton({ item }: { item: Plex.Metadata }) {
   const WatchList = useWatchListCache();
@@ -823,7 +842,7 @@ export function WatchListButton({ item }: { item: Plex.Metadata }) {
         "&:hover": {
           backgroundColor: (theme) => theme.palette.primary.dark,
         },
-        transition: "all 0.4s ease-in-out",
+        transition: "all 0.4s cubic-bezier(0.25,0.10,0.25,1.00)",
         boxShadow: "none",
 
         display: "flex",

@@ -4,6 +4,7 @@ import { getBackendURL } from '../backendURL';
 
 type UserSettingsOptions = 
 "DISABLE_WATCHSCREEN_DARKENING" |
+"DISABLE_HOME_SCREEN_LIBRARIES" |
 "AUTO_MATCH_TRACKS" |
 "AUTO_NEXT_EP" |
 string;
@@ -21,6 +22,7 @@ export const useUserSettings = create<UserSettingsState>((set) => ({
     loaded: false,
     settings: {
         DISABLE_WATCHSCREEN_DARKENING: "false",
+        DISABLE_HOME_SCREEN_LIBRARIES: "false",
         AUTO_MATCH_TRACKS: "true",
         AUTO_NEXT_EP: "true",
     },

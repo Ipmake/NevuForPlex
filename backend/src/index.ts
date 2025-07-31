@@ -7,16 +7,13 @@ import { randomBytes } from 'crypto';
 import { PrismaClient } from '@prisma/client';
 import { CheckPlexUser } from './common/plex';
 import fs from 'fs';
-import { Bonjour } from 'bonjour-service'
+import { Discovery } from 'udp-discovery';
 import httpProxy from 'http-proxy';
-
 
 /* 
  * ENVIRONMENT VARIABLES
     *
     * PLEX_SERVER: The URL of the Plex server that the frontend will connect to
-    * PROXY_PLEX_SERVER?: (DEPRECATED) The URL of the Plex server to proxy requests to
-    * DISABLE_PROXY?: (DEPRECATED) If set to true, the proxy will be disabled and all requests go directly to the Plex server from the frontend (NOT RECOMMENDED)
     * DISABLE_TLS_VERIFY?: If set to true, the proxy will not check any https ssl certificates
     * DISABLE_NEVU_SYNC?: If set to true, NEVU sync (watch together) will be disabled
     * DISABLE_REQUEST_LOGGING?: If set to true, the server will not log any requests
@@ -34,19 +31,20 @@ const status: PerPlexed.Status = {
 
 const app = express();
 const prisma = new PrismaClient();
-const instance = new Bonjour()
+const discovery = new Discovery();
 
-instance.publish({
-    name: 'Nevu',
-    type: 'nevu',
+console.log(`Deployment ID: ${deploymentID}`);
+
+discovery.announce("Nevu", {
     port: parseInt(process.env.PORT || '3000'),
+    type: 'nevu',
     protocol: 'tcp',
     txt: {
         deploymentID,
         version: '1.0.0',
         plexServer: process.env.PLEX_SERVER,
     }
-})
+}, 500, true);
 
 const proxy = httpProxy.createProxyServer({
     ws: true,

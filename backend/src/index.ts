@@ -12,7 +12,9 @@ import httpProxy from 'http-proxy';
 
 /* 
  * ENVIRONMENT VARIABLES
-    *
+    * 
+    * PORT: The port you published the docker container to, defaults to 3000 (For discovery)
+    * LISTEN_PORT: The port the server will listen on, defaults to 3000
     * PLEX_SERVER: The URL of the Plex server that the frontend will connect to
     * DISABLE_TLS_VERIFY?: If set to true, the proxy will not check any https ssl certificates
     * DISABLE_NEVU_SYNC?: If set to true, NEVU sync (watch together) will be disabled
@@ -592,8 +594,8 @@ app.options('*', (req, res) => {
 
 app.use(express.static('www'));
 
-const server = app.listen(3000, () => {
-    console.log('Server started on http://localhost:3000');
+const server = app.listen(process.env.LISTEN_PORT || 3000, () => {
+    console.log(`Server started on http://localhost:${process.env.LISTEN_PORT || 3000}`);
 });
 
 let io = (process.env.DISABLE_NEVU_SYNC === 'true') ? null : new SocketIOServer(server, {

@@ -1,11 +1,12 @@
 # NEVU for Plex
+
 Fixing Plex's old and simple UI.
 
 **PerPlexed is now Nevu!**
 
 [**Docker Hub**](https://hub.docker.com/r/ipmake/nevu)
 
-*Click image for video*
+_Click image for video_
 [![Nevu1](assets/screenshot1.png)](https://www.youtube.com/watch?v=PuTOw3Wg9oY)
 ![Nevu2](assets/screenshot2.png)
 [More Screenshots](https://github.com/Ipmake/Nevu/tree/main/assets)
@@ -18,8 +19,8 @@ Nevu currently supports Movie and TV Show libraries. You can also play media via
 
 Mind that this project is still in development and may be unstable.
 
-
 ## Features
+
 - Modern, Netflix-like UI
 - Seamless Plex integration
 - Play media
@@ -48,18 +49,18 @@ Alternatively, you can use Docker Compose to run Nevu. Create a `docker-compose.
 
 ```yaml
 services:
-    nevu:
-        image: ipmake/nevu
-        container_name: nevu
-        ports:
-            - "3000:3000"
-        volumes:
-            - nevu_data:/data
-        environment:
-            - PLEX_SERVER=http://your-plex-server:32400
+  nevu:
+    image: ipmake/nevu
+    container_name: nevu
+    ports:
+      - "3000:3000"
+    volumes:
+      - nevu_data:/data
+    environment:
+      - PLEX_SERVER=http://your-plex-server:32400
 
 volumes:
-    nevu_data:
+  nevu_data:
 ```
 
 Then run:
@@ -69,17 +70,19 @@ docker-compose up -d
 ```
 
 ### Environment Variables
-| Name                     | Type       | Required | Description                                                                 |
-|--------------------------|------------|----------|-----------------------------------------------------------------------------|
-| `PLEX_SERVER`            | string     | Yes      | The URL of the Plex server that the backend will proxy to (CAN BE LOCAL)    |
-| `DISABLE_TLS_VERIFY`     | true/false | No       | If set to true, the proxy will not check any https ssl certificates         |
-| `DISABLE_NEVU_SYNC`      | true/false | No       | If set to true, Nevu sync (watch together) will be disabled                 |
-| `DISABLE_REQUEST_LOGGING`| true/false | No       | If set to true, the server will not log any requests                        |
-| `DISABLE_GLOBAL_REVIEWS` | true/false | No       | If set to true, nevu global reviews will be disabled                        |
 
-
+| Name                      | Type       | Required | Description                                                                      |
+| ------------------------- | ---------- | -------- | -------------------------------------------------------------------------------- |
+| `PLEX_SERVER`             | string     | Yes      | The URL of the Plex server that the backend will proxy to (CAN BE LOCAL)         |
+| `PORT`                    | number     | No       | The port you published the docker container to, defaults to 3000 (For discovery) |
+| `LISTEN_PORT`             | number     | No       | The port the nevu server will listen on                                          |
+| `DISABLE_TLS_VERIFY`      | true/false | No       | If set to true, the proxy will not check any https ssl certificates              |
+| `DISABLE_NEVU_SYNC`       | true/false | No       | If set to true, Nevu sync (watch together) will be disabled                      |
+| `DISABLE_REQUEST_LOGGING` | true/false | No       | If set to true, the server will not log any requests                             |
+| `DISABLE_GLOBAL_REVIEWS`  | true/false | No       | If set to true, nevu global reviews will be disabled                             |
 
 ## Contributing
+
 Pull requests are welcome for any feature or a bug fix. For major changes, please open an issue first to discuss what you would like to change.
 
 ## Development

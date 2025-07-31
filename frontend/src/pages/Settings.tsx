@@ -6,7 +6,6 @@ import SettingsPlayback from "./settings/SettingsPlayback";
 import { useUserSettings } from "../states/UserSettingsState";
 import SettingsRecommendations from "./settings/SettingsRecommendations";
 import SettingsLibraries from "./settings/SettingsLibraries";
-import SettingsHome from "./settings/SettingsHome";
 
 function Settings() {
   const { loaded } = useUserSettings();
@@ -58,8 +57,6 @@ function Settings() {
         <SettingsItem title="Playback" link="/settings/experience-playback" />
         <SettingsItem title="Recommendations" link="/settings/experience-recommendations" />
         <SettingsItem title="Libraries" link="/settings/experience-libraries" />
-        <SettingsDivider title="UI" />
-        <SettingsItem title="Home" link="/settings/experience-home" />
       </Box>
 
       <Box
@@ -83,7 +80,6 @@ function Settings() {
           <Route path="/experience-playback" element={<SettingsPlayback />} />
           <Route path="/experience-recommendations" element={<SettingsRecommendations />} />
           <Route path="/experience-libraries" element={<SettingsLibraries />} />
-          <Route path="/experience-home" element={<SettingsHome />} />
         </Routes>
       </Box>
     </Box>

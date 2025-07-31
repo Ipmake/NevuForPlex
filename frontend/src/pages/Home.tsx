@@ -126,10 +126,7 @@ export default function Home() {
                     width: "100%",
                     height: "auto",
                     aspectRatio: "16/9",
-                    display: 
-                      settings["DISABLE_HOME_SCREEN_LIBRARIES"] === "true"
-                        ? "none"
-                        : "flex",
+                    display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     borderRadius: "7px",

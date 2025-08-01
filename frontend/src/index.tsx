@@ -55,8 +55,10 @@ getPlatform().then(async (platformData) => {
   const deviceName = await getDeviceName();
   platformCache.deviceName = deviceName;
 
-  if (platformCache.platform)
+  if (platformCache.platform) {
     console.log("Platform detected:", platformCache.platform);
+    platformCache.isDesktop = true;
+  }
   else console.warn("Platform detection failed.");
 });
 

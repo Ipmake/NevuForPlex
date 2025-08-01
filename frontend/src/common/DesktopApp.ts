@@ -24,7 +24,9 @@ export async function getDeviceName(): Promise<string> {
 export const platformCache: {
     platform: DesktopPlatformVersion | null;
     deviceName: string;
+    isDesktop: boolean;
 } = {
     platform: null,
     deviceName: getBrowserName(),
+    isDesktop: false,
 };

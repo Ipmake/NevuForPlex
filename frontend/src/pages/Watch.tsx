@@ -57,6 +57,7 @@ import WatchShowChildView from "../components/WatchShowChildView";
 import { useUserSettings } from "../states/UserSettingsState";
 import PlaybackNextEPButton from "../components/PlaybackNextEPButton";
 import { getBackendURL } from "../backendURL";
+import { platformCache } from "../common/DesktopApp";
 
 let SessionID = "";
 export { SessionID };
@@ -151,7 +152,7 @@ function Watch() {
   };
 
   const [url, setURL] = useState<string>("");
-  const getUrl = `${getBackendURL()}/dynproxy/video/:/transcode/universal/start.mpd?${queryBuilder({
+  const getUrl = `${getBackendURL()}/dynproxy/video/:/transcode/universal/start.${platformCache.isDesktop ? "m3u8" : "mpd"}?${queryBuilder({
     ...getStreamProps(itemID as string, {
       ...(quality.bitrate && {
         maxVideoBitrate: quality
@@ -1940,7 +1941,10 @@ function Watch() {
                 }}
                 config={{
                   file: {
-                    forceDisableHls: true,
+                    forceDisableHls: !platformCache.isDesktop,
+                    forceHLS: platformCache.isDesktop,
+                    forceDASH: !platformCache.isDesktop,
+                    hlsVersion: "1.6.7",
                     dashVersion: "4.7.4",
                     attributes: {
                       controlsList: "nodownload",

@@ -6,7 +6,7 @@ import { ThemeProvider } from "@emotion/react";
 import { CssBaseline, createTheme } from "@mui/material";
 import { BrowserRouter } from "react-router-dom";
 import { makeid, uuidv4 } from "./plex/QuickFunctions";
-import { getPlatform, platformCache } from "./common/DesktopApp";
+import { getDeviceName, getPlatform, platformCache } from "./common/DesktopApp";
 
 import "@fontsource-variable/quicksand";
 import "@fontsource-variable/rubik";
@@ -38,13 +38,22 @@ const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 
-getPlatform().then((platformData) => {
+getPlatform().then(async (platformData) => {
   if(!platformData) return;
 
   // make platformData.platform lowercase but capitalize the first letter
   platformData.platform = platformData.platform.charAt(0).toUpperCase() + platformData.platform.slice(1).toLowerCase();
 
+  switch (platformData.platform) {
+    case "Win32":
+      platformData.platform = "Windows";
+      break;
+  }
+
   platformCache.platform = platformData;
+
+  const deviceName = await getDeviceName();
+  platformCache.deviceName = deviceName;
 
   if (platformCache.platform)
     console.log("Platform detected:", platformCache.platform);

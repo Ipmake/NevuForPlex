@@ -58,7 +58,7 @@ export function getXPlexProps() {
         "X-Plex-Features": "external-media,indirect-media,hub-style-list",
         "X-Plex-Model": "bundled",
         "X-Plex-Device": platformCache.platform?.platform ? "Chrome" : getBrowserName(),
-        "X-Plex-Device-Name": platformCache.platform?.version ?? "Nevu Web",
+        "X-Plex-Device-Name": platformCache.deviceName ?? "Nevu Web",
         "X-Plex-Device-Screen-Resolution": getResString(),
         "X-Plex-Token": localStorage.getItem("accessToken"),
         "X-Plex-Language": "en",

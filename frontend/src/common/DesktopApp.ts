@@ -1,3 +1,5 @@
+import { getBrowserName } from "../plex/QuickFunctions";
+
 export interface DesktopPlatformVersion {
     appVersion: string; // 1.0.0
     arch: string; // x64
@@ -12,8 +14,17 @@ export async function getPlatform(): Promise<DesktopPlatformVersion | null> {
     return null;
 }
 
+export async function getDeviceName(): Promise<string> {
+    if ((window as any).electronAPI) {
+        return await (window as any).electronAPI.getDeviceName();
+    }
+    return getBrowserName();
+}
+
 export const platformCache: {
     platform: DesktopPlatformVersion | null;
+    deviceName: string;
 } = {
-    platform: null
+    platform: null,
+    deviceName: getBrowserName(),
 };

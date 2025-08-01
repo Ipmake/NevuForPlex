@@ -155,9 +155,6 @@ function HeroDisplay({ item }: { item: Plex.Metadata }) {
             controls={false}
             width="100%"
             height="100%"
-            style={{
-              zIndex: -1,
-            }}
             playing={previewVidPlaying}
             volume={MetaScreenPlayerMuted ? 0 : 0.5}
             muted={MetaScreenPlayerMuted}
@@ -171,6 +168,12 @@ function HeroDisplay({ item }: { item: Plex.Metadata }) {
                   controlsList: "nodownload",
                   disablePictureInPicture: true,
                   disableRemotePlayback: true,
+                  style: {
+                    objectFit: "cover",
+                    width: "100%",
+                    height: "100%",
+                    zIndex: -1,
+                  }
                 },
               },
             }}

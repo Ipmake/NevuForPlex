@@ -2,6 +2,7 @@ import axios from "axios";
 import { authedGet, authedPost, authedPut, getIncludeProps, getXPlexProps, queryBuilder } from "./QuickFunctions";
 import './plex.d.ts'
 import { getBackendURL } from "../backendURL";
+import { platformCache } from "../common/DesktopApp";
 
 export async function getAllLibraries(): Promise<Plex.LibarySection[]> {
     const res = await authedGet(`/library/sections`);
@@ -106,16 +107,22 @@ export function getStreamProps(key: string, limitation: {
     maxVideoBitrate?: number,
 }) {
     return {
-        path: "/library/metadata/" + key,
-        protocol: "dash",
-        fastSeek: 1,
+        audioBoost: 700,
+        autoAdjustQuality: limitation.autoAdjustQuality ? 1 : 0,
+        autoAdjustSubtitle: 0,
         directPlay: 0,
         directStream: 1,
-        subtitleSize: 100,
-        audioBoost: 200,
-        addDebugOverlay: 0,
         directStreamAudio: 1,
+        fastSeek: 1,
+        hasMDE: 1,
+        location: "lan",
         mediaBufferSize: 102400,
+        mediaIndex: 0,
+        partIndex: 0,
+        path: "/library/metadata/" + key,
+        protocol: platformCache.isDesktop ? "hls" : "dash",
+        addDebugOverlay: 0,
+        subtitleSize: 100,
         subtitles: "burn",
         "Accept-Language": "en",
         ...getXPlexProps(),

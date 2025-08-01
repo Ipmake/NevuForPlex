@@ -77,7 +77,7 @@ function HeroDisplay({ item }: { item: Plex.Metadata }) {
           bottom: "20vh",
           opacity: previewVidURL ? 1 : 0,
           transition: "all 1s ease",
-          zIndex: 1000,
+          zIndex: 2,
           cursor: "pointer",
           pointerEvents: "all",
 

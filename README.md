@@ -1,11 +1,12 @@
 # NEVU for Plex
+
 Fixing Plex's old and simple UI.
 
 [**Now also available for Android & AndroidTV**](https://github.com/Ipmake/Nevu/discussions/43)
 
 [**Docker Hub**](https://hub.docker.com/r/ipmake/nevu)
 
-*Click image for video*
+_Click image for video_
 [![Nevu1](assets/screenshot1.png)](https://www.youtube.com/watch?v=PuTOw3Wg9oY)
 ![Nevu2](assets/screenshot2.png)
 [More Screenshots](https://github.com/Ipmake/Nevu/tree/main/assets)
@@ -17,7 +18,6 @@ Nevu is a complete redesign of Plex's UI using the Plex media server's API. It c
 Nevu currently supports Movie and TV Show libraries. You can also play media via the interface.
 
 Mind that this project is still in development and may be unstable.
-
 
 ## Features
 - Modern, immersive UI
@@ -40,7 +40,7 @@ The easiest way to run Nevu is to use Docker. You can use the following command 
 
 ```bash
 docker volume create nevu_data
-docker run --name nevu -p 3000:3000 -v nevu_data:/data -e PLEX_SERVER=http://your-plex-server:32400 ipmake/nevu
+docker run --name nevu -p 3000:3000 -p 44201:44201/udp -v nevu_data:/data -e PLEX_SERVER=http://your-plex-server:32400 ipmake/nevu
 ```
 
 ### Docker Compose
@@ -49,18 +49,19 @@ Alternatively, you can use Docker Compose to run Nevu. Create a `docker-compose.
 
 ```yaml
 services:
-    nevu:
-        image: ipmake/nevu
-        container_name: nevu
-        ports:
-            - "3000:3000"
-        volumes:
-            - nevu_data:/data
-        environment:
-            - PLEX_SERVER=http://your-plex-server:32400
+  nevu:
+    image: ipmake/nevu
+    container_name: nevu
+    ports:
+      - "3000:3000"
+      - "44201:44201/udp"
+    volumes:
+      - nevu_data:/data
+    environment:
+      - PLEX_SERVER=http://your-plex-server:32400
 
 volumes:
-    nevu_data:
+  nevu_data:
 ```
 
 Then run:
@@ -70,17 +71,19 @@ docker-compose up -d
 ```
 
 ### Environment Variables
-| Name                     | Type       | Required | Description                                                                 |
-|--------------------------|------------|----------|-----------------------------------------------------------------------------|
-| `PLEX_SERVER`            | string     | Yes      | The URL of the Plex server that the backend will proxy to (CAN BE LOCAL)    |
-| `DISABLE_TLS_VERIFY`     | true/false | No       | If set to true, the proxy will not check any https ssl certificates         |
-| `DISABLE_NEVU_SYNC`      | true/false | No       | If set to true, Nevu sync (watch together) will be disabled                 |
-| `DISABLE_REQUEST_LOGGING`| true/false | No       | If set to true, the server will not log any requests                        |
-| `DISABLE_GLOBAL_REVIEWS` | true/false | No       | If set to true, nevu global reviews will be disabled                        |
 
-
+| Name                      | Type       | Required | Description                                                                      |
+| ------------------------- | ---------- | -------- | -------------------------------------------------------------------------------- |
+| `PLEX_SERVER`             | string     | Yes      | The URL of the Plex server that the backend will proxy to (CAN BE LOCAL)         |
+| `PORT`                    | number     | No       | The port you published the docker container to, defaults to 3000 (For discovery) |
+| `LISTEN_PORT`             | number     | No       | The port the nevu server will listen on                                          |
+| `DISABLE_TLS_VERIFY`      | true/false | No       | If set to true, the proxy will not check any https ssl certificates              |
+| `DISABLE_NEVU_SYNC`       | true/false | No       | If set to true, Nevu sync (watch together) will be disabled                      |
+| `DISABLE_REQUEST_LOGGING` | true/false | No       | If set to true, the server will not log any requests                             |
+| `DISABLE_GLOBAL_REVIEWS`  | true/false | No       | If set to true, nevu global reviews will be disabled                             |
 
 ## Contributing
+
 Pull requests are welcome for any feature or a bug fix. For major changes, please open an issue first to discuss what you would like to change.
 
 ## Development

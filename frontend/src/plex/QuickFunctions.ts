@@ -1,4 +1,5 @@
 import { ProxiedRequest } from "../backendURL";
+import { platformCache } from "../common/DesktopApp";
 import { useSessionStore } from "../states/SessionState";
 
 export async function authedGet(url: string) {
@@ -49,15 +50,15 @@ export function queryBuilder(query: any) {
 export function getXPlexProps() {
     return {
         "X-Incomplete-Segments": "1",
-        "X-Plex-Product": "NEVU",
-        "X-Plex-Version": "0.1.0",
+        "X-Plex-Product": platformCache.platform?.platform ? "Nevu Desktop" : "Nevu Web",
+        "X-Plex-Version": "10.26.0.2578",
         "X-Plex-Client-Identifier": localStorage.getItem("clientID"),
-        "X-Plex-Platform": getBrowserName(),
-        "X-Plex-Platform-Version": getBrowserVersion(),
+        "X-Plex-Platform": platformCache.platform?.platform ?? getBrowserName(),
+        "X-Plex-Platform-Version": platformCache.platform?.version ?? getBrowserVersion(),
         "X-Plex-Features": "external-media,indirect-media,hub-style-list",
         "X-Plex-Model": "bundled",
-        "X-Plex-Device": getBrowserName(),
-        "X-Plex-Device-Name": getBrowserName(),
+        "X-Plex-Device": platformCache.platform?.platform ? "Chrome" : getBrowserName(),
+        "X-Plex-Device-Name": platformCache.deviceName ?? "Nevu Web",
         "X-Plex-Device-Screen-Resolution": getResString(),
         "X-Plex-Token": localStorage.getItem("accessToken"),
         "X-Plex-Language": "en",

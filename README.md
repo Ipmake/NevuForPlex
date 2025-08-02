@@ -2,7 +2,7 @@
 
 Fixing Plex's old and simple UI.
 
-**PerPlexed is now Nevu!**
+[**Now also available for Android & AndroidTV**](https://github.com/Ipmake/Nevu/discussions/43)
 
 [**Docker Hub**](https://hub.docker.com/r/ipmake/nevu)
 
@@ -13,17 +13,17 @@ _Click image for video_
 
 ## Description
 
-Nevu is a complete redesign of Plex's UI using the Plex media server's API. It comes with its own web server. As the keen eye may notice, the UI is heavily inspired by Netflix's UI. It is currently only developed for desktops and laptops. It is not optimized for mobile or TV use.
+Nevu is a complete redesign of Plex's UI using the Plex media server's API. It comes with its own web server. It is currently only developed for desktops and laptops. It is not optimized for mobile or TV use.
 
 Nevu currently supports Movie and TV Show libraries. You can also play media via the interface.
 
 Mind that this project is still in development and may be unstable.
 
 ## Features
-
-- Modern, Netflix-like UI
+- Modern, immersive UI
 - Seamless Plex integration
 - Play media
+- Automatic track matching (Keep the same audio and subtitle language across episodes)
 - Browse libraries
 - Search for media
 - Watch Together (Nevu Sync)

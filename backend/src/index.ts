@@ -54,6 +54,7 @@ const proxy = httpProxy.createProxyServer({
     cookieDomainRewrite: (new URL(process.env.PLEX_SERVER as string)).hostname,
     changeOrigin: true,
     secure: false,
+    followRedirects: true,
 });
 
 proxy.on('error', (err, req, res) => {
@@ -496,6 +497,10 @@ app.use('/dynproxy/*', (req, res) => {
     const url = req.originalUrl.split('/dynproxy')[1];
     if (!url) return res.status(400).send('Bad request');
 
+    // strip cookies from the request
+    req.headers.cookie = '';
+    req.headers['x-forwarded-for'] = ((req.headers['x-forwarded-for'] || req.socket.remoteAddress || '') as string).replace("::ffff:", "");
+
     proxy.web(req, res, { target: `${process.env.PLEX_SERVER}${url}` }, (err) => {
         console.error('Proxy error:', err);
         res.status(500).send('Proxy error');
@@ -504,7 +509,9 @@ app.use('/dynproxy/*', (req, res) => {
 
 app.post('/proxy', (req, res) => {
     const { url, method, headers, data } = req.body;
-    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    const ip = ((req.headers['x-forwarded-for'] || req.socket.remoteAddress || '') as string).replace("::ffff:", "");
+
+    console.log(`[${new Date().toISOString()}] [PROXY] [${method}] ${url} from ${ip}`);
 
     // the url must start with a / to prevent the server from making requests to external servers
     if (!url || !url.startsWith('/')) return res.status(400).send('Invalid URL');
@@ -523,7 +530,7 @@ app.post('/proxy', (req, res) => {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'User-Agent': 'Mozilla/5.0',
-            'X-Fowarded-For': ip,
+            'X-Forwarded-For': ip,
         },
         data,
         ...(process.env.DISABLE_TLS_VERIFY === "true" && {

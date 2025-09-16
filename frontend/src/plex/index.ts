@@ -110,7 +110,7 @@ export function getStreamProps(key: string, limitation: {
         audioBoost: 700,
         autoAdjustQuality: limitation.autoAdjustQuality ? 1 : 0,
         autoAdjustSubtitle: 0,
-        directPlay: 0,
+        directPlay: limitation.maxVideoBitrate === -1 ? 1 : 0,
         directStream: 1,
         directStreamAudio: 1,
         fastSeek: 1,
@@ -123,14 +123,14 @@ export function getStreamProps(key: string, limitation: {
         protocol: platformCache.isDesktop ? "hls" : "dash",
         addDebugOverlay: 0,
         subtitleSize: 100,
-        subtitles: "burn",
+        subtitles: limitation.maxVideoBitrate === -1 ? "sidecar" : "burn",
         "Accept-Language": "en",
         ...getXPlexProps(),
         ...(limitation.autoAdjustQuality && {
             autoAdjustQuality: limitation.autoAdjustQuality ? 1 : 0
         }),
-        ...(limitation.maxVideoBitrate && {
-            maxVideoBitrate: limitation.maxVideoBitrate
+        ...(limitation.maxVideoBitrate && limitation.maxVideoBitrate !== -1 && {
+            maxVideoBitrate: limitation.maxVideoBitrate,
         })
     }
 }

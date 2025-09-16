@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
+  getLibraryDir,
   getLibraryMeta,
   getPlayQueue,
   getServerPreferences,
@@ -29,7 +30,11 @@ import {
   useTheme,
 } from "@mui/material";
 import ReactPlayer from "react-player";
-import { queryBuilder } from "../plex/QuickFunctions";
+import {
+  getIncludeProps,
+  getXPlexProps,
+  queryBuilder,
+} from "../plex/QuickFunctions";
 import {
   ArrowBackIosNewRounded,
   ArrowBackIosRounded,
@@ -61,6 +66,32 @@ import { platformCache } from "../common/DesktopApp";
 
 let SessionID = "";
 export { SessionID };
+
+const getUrl = (
+  data: Plex.Metadata,
+  quality: { bitrate?: number; auto?: boolean }
+) => {
+  console.log("Metadata:", data);
+  const bitrate = quality
+    ? quality.bitrate
+    : parseInt(localStorage.getItem("quality") ?? "10000");
+  if (bitrate === -1)
+    return `${getBackendURL()}/dynproxy${
+      data?.Media?.[0].Part[0].key
+    }?${queryBuilder({
+      ...getXPlexProps(),
+    })}`;
+
+  return `${getBackendURL()}/dynproxy/video/:/transcode/universal/start.${
+    platformCache.isDesktop ? "m3u8" : "mpd"
+  }?${queryBuilder({
+    ...getStreamProps(data.ratingKey as string, {
+      ...(quality.bitrate && {
+        maxVideoBitrate: bitrate,
+      }),
+    }),
+  })}`;
+};
 
 function Watch() {
   const { itemID } = useParams<{ itemID: string }>();
@@ -121,12 +152,14 @@ function Watch() {
     });
 
     let Metadata: Plex.Metadata | null = null;
-    await getLibraryMeta(itemID).then((metadata) => {
-      Metadata = metadata;
-      if (["movie", "episode"].includes(metadata.type)) {
-        setMetadata(metadata);
-        if (metadata.type === "episode") {
-          getLibraryMeta(metadata.grandparentRatingKey as string).then(
+    await getLibraryDir(`/library/metadata/${itemID}`, {
+      ...getIncludeProps(),
+    }).then((mediacontainer) => {
+      Metadata = mediacontainer.Metadata?.[0] ?? null;
+      if (["movie", "episode"].includes(Metadata?.type as string)) {
+        setMetadata(Metadata);
+        if (Metadata?.type === "episode") {
+          getLibraryMeta(Metadata?.grandparentRatingKey as string).then(
             (show) => {
               setShowMetadata(show);
             }
@@ -152,15 +185,6 @@ function Watch() {
   };
 
   const [url, setURL] = useState<string>("");
-  const getUrl = `${getBackendURL()}/dynproxy/video/:/transcode/universal/start.${platformCache.isDesktop ? "m3u8" : "mpd"}?${queryBuilder({
-    ...getStreamProps(itemID as string, {
-      ...(quality.bitrate && {
-        maxVideoBitrate: quality
-          ? quality.bitrate
-          : parseInt(localStorage.getItem("quality") ?? "10000"),
-      }),
-    }),
-  })}`;
 
   const [showControls, setShowControls] = useState(true);
   useEffect(() => {
@@ -419,10 +443,10 @@ function Watch() {
         }
       }
 
-      console.log(`Setting URL: ${getUrl}`);
+      console.log(`Setting URL: ${getUrl(metadata, quality)}`);
 
       await loadMetadata(itemID);
-      setURL(getUrl);
+      setURL(getUrl(metadata, quality));
       setShowError(false);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1093,7 +1117,7 @@ function Watch() {
                         seekToAfterLoad.current = progress;
                       setURL("");
                       setTimeout(() => {
-                        setURL(getUrl);
+                        setURL(getUrl(metadata, quality));
                       }, 100);
                     }}
                   >
@@ -1186,7 +1210,7 @@ function Watch() {
                         seekToAfterLoad.current = progress;
                       setURL("");
                       setTimeout(() => {
-                        setURL(getUrl);
+                        setURL(getUrl(metadata, quality));
                       }, 100);
                     }}
                   >
@@ -1264,7 +1288,7 @@ function Watch() {
                       seekToAfterLoad.current = progress;
                     setURL("");
                     setTimeout(() => {
-                      setURL(getUrl);
+                      setURL(getUrl(metadata, quality));
                     }, 100);
                   }}
                 >
@@ -1332,7 +1356,7 @@ function Watch() {
                         seekToAfterLoad.current = progress;
                       setURL("");
                       setTimeout(() => {
-                        setURL(getUrl);
+                        setURL(getUrl(metadata, quality));
                       }, 100);
                     }}
                   >
@@ -1684,9 +1708,7 @@ function Watch() {
                             )
                               return "";
                             return getTranscodeImageURL(
-                              `/library/parts/${
-                                metadata.Media[0].Part[0].id
-                              }/indexes/sd/${value}`,
+                              `/library/parts/${metadata.Media[0].Part[0].id}/indexes/sd/${value}`,
                               240,
                               135
                             );
@@ -1941,9 +1963,6 @@ function Watch() {
                 }}
                 config={{
                   file: {
-                    forceDisableHls: !platformCache.isDesktop,
-                    forceHLS: platformCache.isDesktop,
-                    forceDASH: !platformCache.isDesktop,
                     hlsVersion: "1.6.7",
                     dashVersion: "4.7.4",
                     attributes: {
@@ -2192,6 +2211,13 @@ export function getCurrentVideoLevels(
     extra: string;
     original?: boolean;
   }[] = [];
+
+  // if (platformCache.isDesktop)
+  //   levels.push({
+  //     title: "Direct Play (Original)",
+  //     bitrate: -1,
+  //     extra: extraForOriginal,
+  //   });
 
   switch (resolution) {
     case "720":

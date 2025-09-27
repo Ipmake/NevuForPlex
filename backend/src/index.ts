@@ -109,16 +109,23 @@ const noVerifyHttpsAgent = new https.Agent({
         }
 
         // check whether the PLEX_SERVER is reachable
-        try {
-            await axios.get(`${process.env.PLEX_SERVER}/identity`, {
-                timeout: 5000,
-            });
-        } catch (error) {
-            status.error = true;
-            status.message = 'Proxy cannot reach PLEX_SERVER';
-            console.error('Proxy cannot reach PLEX_SERVER');
-            return;
-        }
+        await new Promise<void>(async (resolve) => {
+            while (true) {
+                const r = await axios.get(`${process.env.PLEX_SERVER}/identity`, {
+                    timeout: 5000,
+                }).catch(() => null);
+
+                if (r && r.status === 200) {
+                    status.error = false;
+                    return resolve();
+                } else {
+                    status.error = true;
+                    status.message = 'Proxy cannot reach PLEX_SERVER';
+                    console.error('Proxy cannot reach PLEX_SERVER');
+                    await new Promise(r => setTimeout(r, 3000));
+                }
+            }
+        })
     }
 
 

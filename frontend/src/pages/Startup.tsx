@@ -16,7 +16,7 @@ interface StartupState {
   setLastStatus: (status: PerPlexed.Status) => void;
 
   frontEndStatus?: PerPlexed.Status;
-  setFrontEndStatus: (frontEndStatus: PerPlexed.Status) => void;
+  setFrontEndStatus: (frontEndStatus: PerPlexed.Status | undefined) => void;
 }
 
 export const useStartupState = create<StartupState>((set) => ({
@@ -68,6 +68,7 @@ function Startup() {
       }
 
       setLastStatus(res);
+      setFrontEndStatus(undefined);
       if (res.error) setShowDiagnostic(true);
     };
 

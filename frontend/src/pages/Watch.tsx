@@ -1751,6 +1751,9 @@ function Watch() {
                             if (playing) socket?.emit("EVNT_SYNC_PAUSE");
                             else socket?.emit("EVNT_SYNC_RESUME");
                           }}
+                          onKeyDown={(e) => {
+                            e.preventDefault();
+                          }}
                         >
                           {playing ? (
                             <PauseRounded fontSize="large" />
@@ -1811,30 +1814,44 @@ function Watch() {
                           vertical: "bottom",
                           horizontal: "center",
                         }}
+                        elevation={6}
                         sx={{
-                          "& .MuiPaper-root": {
-                            py: 2,
-                          },
+                          userSelect: "none",
                         }}
                       >
-                        <Slider
+                        <Paper
+                          elevation={6}
                           sx={{
-                            height: "100px",
+                            height: "auto",
+                            userSelect: "none",
+                            bgcolor: "#000",
+                            border: (theme) =>
+                              `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+                            py: "20px",
                           }}
-                          value={volume}
-                          onChange={(event, value) => {
-                            setVolume(value as number);
-                            localStorage.setItem("volume", value.toString());
-                          }}
-                          aria-labelledby="continuous-slider"
-                          min={0}
-                          max={100}
-                          step={1}
-                          orientation="vertical"
-                        />
+                        >
+                          <Slider
+                            sx={{
+                              height: "100px",
+                            }}
+                            value={volume}
+                            onChange={(event, value) => {
+                              setVolume(value as number);
+                              localStorage.setItem("volume", value.toString());
+                            }}
+                            aria-labelledby="continuous-slider"
+                            min={0}
+                            max={100}
+                            step={1}
+                            orientation="vertical"
+                          />
+                        </Paper>
                       </Popover>
 
                       <IconButton
+                        onKeyDown={(e) => {
+                          e.preventDefault();
+                        }}
                         onClick={(event) => {
                           setVolumePopoverAnchor(event.currentTarget);
                         }}
@@ -1847,6 +1864,9 @@ function Watch() {
                       )}
 
                       <IconButton
+                        onKeyDown={(e) => {
+                          e.preventDefault();
+                        }}
                         onClick={(event) => {
                           setShowTune(!showTune);
                           setTunePage(0);
@@ -1858,6 +1878,9 @@ function Watch() {
 
                       {room && (
                         <IconButton
+                          onKeyDown={(e) => {
+                            e.preventDefault();
+                          }}
                           onClick={() => {
                             setSyncInterfaceOpen(true);
                           }}
@@ -1867,6 +1890,9 @@ function Watch() {
                       )}
 
                       <IconButton
+                        onKeyDown={(e) => {
+                          e.preventDefault();
+                        }}
                         onClick={() => {
                           if (!document.fullscreenElement)
                             document.documentElement.requestFullscreen();
@@ -2123,6 +2149,9 @@ function NextEPButton({ queue }: { queue?: Plex.Metadata[] }) {
           onClick={() => {
             navigate(`/watch/${queue[1].ratingKey}`);
           }}
+          onKeyDown={(e) => {
+            e.preventDefault();
+          }}
           onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
           onMouseLeave={() => setAnchorEl(null)}
         >
@@ -2246,17 +2275,17 @@ export function getCurrentVideoLevels(
           {
             title: "Convert to 4K",
             bitrate: 40000,
-            extra: "(High) 40Mbps",
+            extra: "(High) 60Mbps",
           },
           {
             title: "Convert to 4K",
             bitrate: 30000,
-            extra: "(Medium) 30Mbps",
+            extra: "(Medium) 40Mbps",
           },
           {
             title: "Convert to 4K",
             bitrate: 20000,
-            extra: "20Mbps",
+            extra: "30Mbps",
           },
           {
             title: "Convert to 1080p",

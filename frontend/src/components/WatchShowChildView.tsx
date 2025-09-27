@@ -4,8 +4,8 @@ import {
   SubscriptionsRounded,
 } from "@mui/icons-material";
 import {
+  Backdrop,
   Box,
-  ClickAwayListener,
   Divider,
   Fade,
   IconButton,
@@ -63,6 +63,18 @@ function WatchShowChildView({ item }: { item: Plex.Metadata }) {
 
   return (
     <>
+      <Backdrop
+        open={Boolean(anchorEl)}
+        sx={{
+          zIndex: 9999,
+          backgroundColor: "transparent",
+        }}
+        onClick={(e) => {
+          e.stopPropagation();
+          setAnchorEl(null);
+        }}
+      />
+      
       <Popper
         open={Boolean(anchorEl)}
         anchorEl={anchorEl}
@@ -88,6 +100,7 @@ function WatchShowChildView({ item }: { item: Plex.Metadata }) {
             },
           },
         ]}
+        onClick={(e) => e.stopPropagation()}
       >
         {({ TransitionProps }) => (
           <Fade {...TransitionProps} timeout={300}>
@@ -100,32 +113,27 @@ function WatchShowChildView({ item }: { item: Plex.Metadata }) {
                 userSelect: "none",
               }}
             >
-              <ClickAwayListener
-                onClickAway={(e) => {
-                  e.stopPropagation();
-                  setAnchorEl(null);
+              <Box
+                sx={{
+                  display: "flex",
+                  borderRadius: 1,
+                  maxHeight: "70vh",
+                  maxWidth: "90vw",
                 }}
+                onClick={(e) => e.stopPropagation()}
               >
-                <Box
-                  sx={{
-                    display: "flex",
-                    borderRadius: 1,
-                    maxHeight: "70vh",
-                    maxWidth: "90vw",
-                  }}
-                >
-                  {/* Season selector */}
-                  {(seasons?.length ?? 1) > 1 && (
-                    <Box
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        width: 220,
-                        height: 480,
-                        overflow: "auto",
-                        borderRight: `1px solid ${theme.palette.divider}`,
-                      }}
-                    >
+                {/* Season selector */}
+                {(seasons?.length ?? 1) > 1 && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      width: 220,
+                      height: 480,
+                      overflow: "auto",
+                      borderRight: `1px solid ${theme.palette.divider}`,
+                    }}
+                  >
                       <Box sx={{ p: 2, pb: 1 }}>
                         <Typography
                           variant="subtitle1"
@@ -366,7 +374,6 @@ function WatchShowChildView({ item }: { item: Plex.Metadata }) {
                     </Box>
                   </Box>
                 </Box>
-              </ClickAwayListener>
             </Paper>
           </Fade>
         )}

@@ -1481,7 +1481,12 @@ function MetaPageReviews({ data }: { data: Plex.Metadata | undefined }) {
                         {username?.charAt(0) || "U"}
                       </Avatar>
                       <Box sx={{ flex: 1 }}>
-                        <Stack spacing={0.5} justifyContent={"flex-start"} direction={"row"} alignItems="center">
+                        <Stack
+                          spacing={0.5}
+                          justifyContent={"flex-start"}
+                          direction={"row"}
+                          alignItems="center"
+                        >
                           <Typography fontWeight="medium" noWrap>
                             {username || "Anonymous User"}
                           </Typography>
@@ -1980,45 +1985,6 @@ function EpisodeItem({
           Play
         </MenuItem>
         <MenuItem
-          onClick={async () => {
-            if (!item) return;
-            let state = !(!Boolean(item.viewOffset) && Boolean(item.viewCount))
-              ? "unwatched"
-              : "watched";
-
-            useConfirmModal.getState().setModal({
-              title: `Mark as ${state === "watched" ? "Unwatched" : "Watched"}`,
-              message: `Are you sure you want to mark "${item.title}" as ${
-                state === "watched" ? "Unwatched" : "Watched"
-              }?`,
-              onConfirm: async () => {
-                await setMediaPlayedStatus(
-                  !(!Boolean(item.viewOffset) && Boolean(item.viewCount)),
-                  item.ratingKey
-                );
-
-                handleClose();
-                refetchData?.();
-              },
-              onCancel: () => {
-                handleClose();
-              },
-            });
-          }}
-        >
-          <ListItemIcon>
-            {!Boolean(item.viewOffset) && Boolean(item.viewCount) ? (
-              <CheckCircleOutlineRounded fontSize="small" />
-            ) : (
-              <CheckCircleRounded fontSize="small" />
-            )}
-          </ListItemIcon>
-
-          {!Boolean(item.viewOffset) && Boolean(item.viewCount)
-            ? "Mark as Unwatched"
-            : "Mark as Watched"}
-        </MenuItem>
-        <MenuItem
           onClick={(e) => {
             e.stopPropagation();
             if (setSelectMode) setSelectMode(!selectMode);
@@ -2034,6 +2000,85 @@ function EpisodeItem({
             )}
           </ListItemIcon>
           {selectMode ? "Disable Selection" : "Enable Selection"}
+        </MenuItem>
+
+        <Divider
+          sx={{
+            my: 1,
+          }}
+        />
+
+        <MenuItem
+          onClick={async () => {
+            if (!item) return;
+
+            useConfirmModal.getState().setModal({
+              title: `Mark as Watched`,
+              message: `Are you sure you want to mark "${item.title}" as Watched?`,
+              onConfirm: async () => {
+                switch (item.type) {
+                  case "movie":
+                  case "episode":
+                    item.viewCount = 1;
+                    await setMediaPlayedStatus(true, item.ratingKey);
+                    break;
+                  case "show":
+                    item.viewedLeafCount = item.leafCount;
+                    await setMediaPlayedStatus(true, item.ratingKey);
+                    break;
+                  default:
+                    break;
+                }
+
+                handleClose();
+                refetchData?.();
+              },
+              onCancel: () => {
+                handleClose();
+              },
+            });
+          }}
+        >
+          <ListItemIcon>
+            <CheckCircleRounded fontSize="small" />
+          </ListItemIcon>
+          Mark as Watched
+        </MenuItem>
+        <MenuItem
+          onClick={async () => {
+            if (!item) return;
+
+            useConfirmModal.getState().setModal({
+              title: `Mark as Unwatched`,
+              message: `Are you sure you want to mark "${item.title}" as Unwatched?`,
+              onConfirm: async () => {
+                switch (item.type) {
+                  case "movie":
+                  case "episode":
+                    item.viewCount = 0;
+                    await setMediaPlayedStatus(false, item.ratingKey);
+                    break;
+                  case "show":
+                    item.viewedLeafCount = 0;
+                    await setMediaPlayedStatus(false, item.ratingKey);
+                    break;
+                  default:
+                    break;
+                }
+
+                handleClose();
+                refetchData?.();
+              },
+              onCancel: () => {
+                handleClose();
+              },
+            });
+          }}
+        >
+          <ListItemIcon>
+            <CheckCircleOutlineRounded fontSize="small" />
+          </ListItemIcon>
+          Mark as Unwatched
         </MenuItem>
       </Menu>
       <Box

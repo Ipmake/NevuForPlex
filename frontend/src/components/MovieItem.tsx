@@ -274,58 +274,30 @@ function MovieItem({
           </ListItemIcon>
           View Similar
         </MenuItem>
+
+        <Divider
+          sx={{
+            my: 1,
+          }}
+        />
+
         <MenuItem
           onClick={async () => {
             if (!item) return;
-            let state = "unwatched";
-
-            if (
-              (item.type === "movie" && Boolean(item.viewCount)) ||
-              (item.type === "episode" &&
-                (item.viewOffset ?? 0) >= item.duration)
-            ) {
-              state = "watched";
-            }
-
-            if (item.type === "show") {
-              state =
-                item.viewedLeafCount === item.leafCount
-                  ? "watched"
-                  : "unwatched";
-            }
 
             useConfirmModal.getState().setModal({
-              title: `Mark as ${state === "watched" ? "Unwatched" : "Watched"}`,
-              message: `Are you sure you want to mark "${item.title}" as ${
-                state === "watched" ? "Unwatched" : "Watched"
-              }?`,
+              title: `Mark as Watched`,
+              message: `Are you sure you want to mark "${item.title}" as Watched?`,
               onConfirm: async () => {
                 switch (item.type) {
                   case "movie":
                   case "episode":
-                    if (
-                      item.type === "episode" &&
-                      (item?.viewOffset ?? 0) < item.duration
-                    ) {
-                      item.viewCount = 1;
-                    } else {
-                      item.viewCount = !Boolean(item.viewCount) ? 1 : 0;
-                    }
-                    await setMediaPlayedStatus(
-                      Boolean(item.viewCount),
-                      item.ratingKey
-                    );
+                    item.viewCount = 1;
+                    await setMediaPlayedStatus(true, item.ratingKey);
                     break;
                   case "show":
-                    const newViewedLeafCount =
-                      item.viewedLeafCount === item.leafCount
-                        ? 0
-                        : item.leafCount;
-                    item.viewedLeafCount = newViewedLeafCount;
-                    await setMediaPlayedStatus(
-                      newViewedLeafCount === item.leafCount,
-                      item.ratingKey
-                    );
+                    item.viewedLeafCount = item.leafCount;
+                    await setMediaPlayedStatus(true, item.ratingKey);
                     break;
                   default:
                     break;
@@ -341,32 +313,45 @@ function MovieItem({
           }}
         >
           <ListItemIcon>
-            {item?.type === "movie" || item?.type === "episode" ? (
-              !((item?.viewCount ?? 0) > 0) ? (
-                <CheckCircleOutlineRounded fontSize="small" />
-              ) : (
-                <CheckCircleRounded fontSize="small" />
-              )
-            ) : item?.type === "show" ? (
-              item?.viewedLeafCount === item?.leafCount ? (
-                <CheckCircleRounded fontSize="small" />
-              ) : (
-                <CheckCircleOutlineRounded fontSize="small" />
-              )
-            ) : null}
+            <CheckCircleRounded fontSize="small" />
           </ListItemIcon>
+          Mark as Watched
+        </MenuItem>
+        <MenuItem
+          onClick={async () => {
+            if (!item) return;
 
-          {item?.type === "movie" || item?.type === "episode"
-            ? item.type === "episode" && (item.viewOffset ?? 0) < item.duration
-              ? "Mark as Watched"
-              : !((item?.viewCount ?? 0) > 0)
-              ? "Mark as Watched"
-              : "Mark as Unwatched"
-            : item?.type === "show"
-            ? item?.viewedLeafCount === item?.leafCount
-              ? "Mark as Unwatched"
-              : "Mark as Watched"
-            : null}
+            useConfirmModal.getState().setModal({
+              title: `Mark as Unwatched`,
+              message: `Are you sure you want to mark "${item.title}" as Unwatched?`,
+              onConfirm: async () => {
+                switch (item.type) {
+                  case "movie":
+                  case "episode":
+                    item.viewCount = 0;
+                    await setMediaPlayedStatus(false, item.ratingKey);
+                    break;
+                  case "show":
+                    item.viewedLeafCount = 0;
+                    await setMediaPlayedStatus(false, item.ratingKey);
+                    break;
+                  default:
+                    break;
+                }
+
+                handleClose();
+                refetchData?.();
+              },
+              onCancel: () => {
+                handleClose();
+              },
+            });
+          }}
+        >
+          <ListItemIcon>
+            <CheckCircleOutlineRounded fontSize="small" />
+          </ListItemIcon>
+          Mark as Unwatched
         </MenuItem>
       </Menu>
 
@@ -410,7 +395,8 @@ function MovieItem({
             opacity: 1,
           },
 
-          transition: "all 0.4s cubic-bezier(0.25,0.10,0.25,1.00), transform 0.4s cubic-bezier(0.25,0.10,0.25,1.00)",
+          transition:
+            "all 0.4s cubic-bezier(0.25,0.10,0.25,1.00), transform 0.4s cubic-bezier(0.25,0.10,0.25,1.00)",
           cursor: "pointer",
         }}
         onContextMenu={(e) => {

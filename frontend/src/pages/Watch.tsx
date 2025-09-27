@@ -2274,17 +2274,17 @@ export function getCurrentVideoLevels(
         ...[
           {
             title: "Convert to 4K",
-            bitrate: 40000,
+            bitrate: 60000,
             extra: "(High) 60Mbps",
           },
           {
             title: "Convert to 4K",
-            bitrate: 30000,
+            bitrate: 40000,
             extra: "(Medium) 40Mbps",
           },
           {
             title: "Convert to 4K",
-            bitrate: 20000,
+            bitrate: 30000,
             extra: "30Mbps",
           },
           {
@@ -2299,8 +2299,8 @@ export function getCurrentVideoLevels(
           },
           {
             title: "Convert to 1080p",
-            bitrate: 10000,
-            extra: "10Mbps",
+            bitrate: 8000,
+            extra: "8Mbps",
           },
           {
             title: "Convert to 720p",
@@ -2336,8 +2336,8 @@ export function getCurrentVideoLevels(
           },
           {
             title: "Convert to 1080p",
-            bitrate: 10000,
-            extra: "10Mbps",
+            bitrate: 8000,
+            extra: "8Mbps",
           },
           {
             title: "Convert to 720p",

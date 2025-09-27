@@ -89,26 +89,7 @@ function Appbar() {
         return rawValue === undefined || rawValue === "true";
       });
 
-      setLibraries([
-        ...filtered.filter((lib) => ["movie", "show"].includes(lib.type)),
-        ...filtered.filter((lib) => ["movie", "show"].includes(lib.type)),
-        ...filtered.filter((lib) => ["movie", "show"].includes(lib.type)),
-        ...filtered.filter((lib) => ["movie", "show"].includes(lib.type)),
-        ...filtered.filter((lib) => ["movie", "show"].includes(lib.type)),
-        ...filtered.filter((lib) => ["movie", "show"].includes(lib.type)),
-        ...filtered.filter((lib) => ["movie", "show"].includes(lib.type)),
-        ...filtered.filter((lib) => ["movie", "show"].includes(lib.type)),
-        ...filtered.filter((lib) => ["movie", "show"].includes(lib.type)),
-        ...filtered.filter((lib) => ["movie", "show"].includes(lib.type)),
-        ...filtered.filter((lib) => ["movie", "show"].includes(lib.type)),
-        ...filtered.filter((lib) => ["movie", "show"].includes(lib.type)),
-        ...filtered.filter((lib) => ["movie", "show"].includes(lib.type)),
-        ...filtered.filter((lib) => ["movie", "show"].includes(lib.type)),
-        ...filtered.filter((lib) => ["movie", "show"].includes(lib.type)),
-        ...filtered.filter((lib) => ["movie", "show"].includes(lib.type)),
-        ...filtered.filter((lib) => ["movie", "show"].includes(lib.type)),
-        ...filtered.filter((lib) => ["movie", "show"].includes(lib.type)),
-      ]);
+      setLibraries(filtered.filter((lib) => ["movie", "show"].includes(lib.type)));
     });
   }, [settings]);
 

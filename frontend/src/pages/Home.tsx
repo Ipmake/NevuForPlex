@@ -28,7 +28,7 @@ export default function Home() {
   const [loading, setLoading] = React.useState(true);
 
   useEffect(() => {
-    if(!settingsLoaded) return;
+    if (!settingsLoaded) return;
 
     async function fetchData() {
       setLoading(true);
@@ -42,9 +42,9 @@ export default function Home() {
         });
         setLibraries(enabledLibraries);
 
-        const filteredLibraries = enabledLibraries.filter((lib) =>
-          ["movie", "show"].includes(lib.type)
-        );
+        const filteredLibraries = enabledLibraries
+          .filter((lib) => ["movie", "show"].includes(lib.type))
+          .slice(0, 4); // limit to first 4 libraries
 
         const featuredData = await getRecommendations(filteredLibraries);
         setFeatured(featuredData);
@@ -126,7 +126,7 @@ export default function Home() {
                     width: "100%",
                     height: "auto",
                     aspectRatio: "16/9",
-                    display: 
+                    display:
                       settings["DISABLE_HOME_SCREEN_LIBRARIES"] === "true"
                         ? "none"
                         : "flex",

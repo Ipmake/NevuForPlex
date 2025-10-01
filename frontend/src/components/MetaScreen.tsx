@@ -252,7 +252,12 @@ function MetaScreen() {
 
   if (loading)
     return (
-      <Backdrop open={true}>
+      <Backdrop
+        open={true}
+        sx={{
+          zIndex: 100,
+        }}
+      >
         <CircularProgress />
       </Backdrop>
     );

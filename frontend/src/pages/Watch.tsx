@@ -145,6 +145,12 @@ function Watch() {
   const { open: syncInterfaceOpen, setOpen: setSyncInterfaceOpen } =
     useSyncInterfaceState();
 
+  const [controlElementsVisible, setControlElementsVisible] = useState(false);
+
+  useEffect(() => {
+    setControlElementsVisible(volumePopoverOpen || showTune);
+  }, [volumePopoverOpen, showTune]);
+
   const loadMetadata = async (itemID: string) => {
     await getUniversalDecision(itemID, {
       maxVideoBitrate: quality.bitrate,
@@ -1026,19 +1032,18 @@ function Watch() {
             "& .MuiPaper-root": {
               overflow: "hidden",
               borderRadius: 1,
+              background: "transparent",
             },
           }}
         >
           <Paper
-            elevation={6}
             sx={{
               width: 350,
               height: "auto",
               overflow: "hidden",
               userSelect: "none",
-              bgcolor: "#000",
-              border: (theme) =>
-                `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+              backdropFilter: "blur(20px)",
+              border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
             }}
           >
             {tunePage === 0 && (
@@ -1080,12 +1085,11 @@ function Watch() {
                       px: 2,
                       userSelect: "none",
                       cursor: "pointer",
-                      transition: "all 0.2s ease",
+                      transition: "all 0.3s ease-in-out",
+                      backgroundColor: "#00000088",
                       "&:hover": {
-                        backgroundColor: alpha(
-                          theme.palette.primary.main,
-                          0.15
-                        ),
+                        transition: "all 0s ease-in-out",
+                        backgroundColor: "#000000ee",
                       },
                     }}
                     onClick={async () => {
@@ -1174,12 +1178,11 @@ function Watch() {
                       px: 2,
                       userSelect: "none",
                       cursor: "pointer",
-                      transition: "all 0.2s ease",
+                      transition: "all 0.3s ease-in-out",
+                      backgroundColor: "#00000088",
                       "&:hover": {
-                        backgroundColor: alpha(
-                          theme.palette.primary.main,
-                          0.15
-                        ),
+                        transition: "all 0s ease-in-out",
+                        backgroundColor: "#000000ee",
                       },
                     }}
                     onClick={async () => {
@@ -1256,9 +1259,11 @@ function Watch() {
                     px: 2,
                     userSelect: "none",
                     cursor: "pointer",
-                    transition: "all 0.2s ease",
+                    transition: "all 0.3s ease-in-out",
+                    backgroundColor: "#00000088",
                     "&:hover": {
-                      backgroundColor: alpha(theme.palette.primary.main, 0.15),
+                      transition: "all 0s ease-in-out",
+                      backgroundColor: "#000000ee",
                     },
                   }}
                   onClick={async () => {
@@ -1320,12 +1325,11 @@ function Watch() {
                       px: 2,
                       userSelect: "none",
                       cursor: "pointer",
-                      transition: "all 0.2s ease",
+                      transition: "all 0.3s ease-in-out",
+                      backgroundColor: "#00000088",
                       "&:hover": {
-                        backgroundColor: alpha(
-                          theme.palette.primary.main,
-                          0.15
-                        ),
+                        transition: "all 0s ease-in-out",
+                        backgroundColor: "#000000ee",
                       },
                     }}
                     onClick={async () => {
@@ -1418,20 +1422,20 @@ function Watch() {
                 >
                   <Button
                     sx={{
-                      width: "auto",
                       px: 3,
-                      py: 1,
-
-                      background: theme.palette.background.paper,
-                      color: theme.palette.text.primary,
-                      transition: "all 0.25s ease",
-
+                      py: 1.5,
+                      backgroundColor: "rgba(0,0,0,0.8)",
+                      backdropFilter: "blur(20px)",
+                      border: `1px solid ${alpha(theme.palette.divider, 0.3)}`,
+                      color: "#fff",
                       "&:hover": {
-                        background: theme.palette.primary.dark,
-                        color: theme.palette.text.primary,
-
-                        boxShadow: "0px 0px 10px 0px #000000AA",
-                        px: 4,
+                        backgroundColor: "rgba(0,0,0,0.9)",
+                        transform: "translateY(-2px)",
+                        boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+                        border: `1px solid ${alpha(
+                          theme.palette.primary.main,
+                          0.5
+                        )}`,
                       },
                     }}
                     variant="contained"
@@ -1453,15 +1457,15 @@ function Watch() {
                         flexDirection: "row",
                         alignItems: "center",
                         justifyContent: "center",
-                        transition: "all 0.25s",
-                        gap: 1,
+                        gap: 1.5,
                       }}
                     >
-                      <SkipNext />{" "}
+                      <SkipNext sx={{ fontSize: 18 }} />
                       <Typography
                         sx={{
-                          fontSize: 14,
-                          fontWeight: "bold",
+                          fontSize: "0.875rem",
+                          fontWeight: 600,
+                          letterSpacing: "0.025em",
                         }}
                       >
                         Skip Intro
@@ -1498,20 +1502,20 @@ function Watch() {
                 >
                   <Button
                     sx={{
-                      width: "auto",
                       px: 3,
-                      py: 1,
-
-                      background: theme.palette.background.paper,
-                      color: theme.palette.text.primary,
-                      transition: "all 0.25s ease",
-
+                      py: 1.5,
+                      backgroundColor: "rgba(0,0,0,0.8)",
+                      backdropFilter: "blur(20px)",
+                      border: `1px solid ${alpha(theme.palette.divider, 0.3)}`,
+                      color: "#fff",
                       "&:hover": {
-                        background: theme.palette.primary.dark,
-                        color: theme.palette.text.primary,
-
-                        boxShadow: "0px 0px 10px 0px #000000AA",
-                        px: 4,
+                        backgroundColor: "rgba(0,0,0,0.9)",
+                        transform: "translateY(-2px)",
+                        boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+                        border: `1px solid ${alpha(
+                          theme.palette.primary.main,
+                          0.5
+                        )}`,
                       },
                     }}
                     variant="contained"
@@ -1534,15 +1538,15 @@ function Watch() {
                         flexDirection: "row",
                         alignItems: "center",
                         justifyContent: "center",
-                        transition: "all 0.25s",
-                        gap: 1,
+                        gap: 1.5,
                       }}
                     >
-                      <SkipNext />{" "}
+                      <SkipNext sx={{ fontSize: 18 }} />
                       <Typography
                         sx={{
-                          fontSize: 14,
-                          fontWeight: "bold",
+                          fontSize: "0.875rem",
+                          fontWeight: 600,
+                          letterSpacing: "0.025em",
                         }}
                       >
                         Skip Credits
@@ -1589,7 +1593,7 @@ function Watch() {
               </Fade>
 
               <Fade
-                in={showControls || !playing}
+                in={showControls || !playing || controlElementsVisible}
                 style={{
                   transitionDuration: "1s",
                 }}
@@ -1602,26 +1606,23 @@ function Watch() {
                     zIndex: 1,
                     width: "100vw",
                     height: "100vh",
-
                     display: "flex",
                     flexDirection: "column",
-                    backgroundColor:
+                    background:
                       settings["DISABLE_WATCHSCREEN_DARKENING"] === "true"
                         ? "transparent"
-                        : "#000000AA",
+                        : "linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0.8) 100%)",
                     pointerEvents: "none",
                   }}
                 >
                   <Box
                     sx={{
-                      mt: 2,
-                      mx: 2,
-
+                      mt: 3,
+                      mx: 3,
                       display: "flex",
                       flexDirection: "row",
                       justifyContent: "flex-start",
                       alignItems: "center",
-
                       pointerEvents: "all",
                     }}
                   >
@@ -1656,8 +1657,22 @@ function Watch() {
                             })}`
                           );
                       }}
+                      sx={{
+                        width: 48,
+                        height: 48,
+                        backgroundColor: "rgba(0,0,0,0.6)",
+                        backdropFilter: "blur(20px)",
+                        border: `1px solid ${alpha(
+                          theme.palette.divider,
+                          0.2
+                        )}`,
+                        "&:hover": {
+                          backgroundColor: "rgba(0,0,0,0.8)",
+                          transform: "scale(1.05)",
+                        },
+                      }}
                     >
-                      <ArrowBackIosNewRounded fontSize="large" />
+                      <ArrowBackIosNewRounded fontSize="medium" />
                     </IconButton>
                   </Box>
 
@@ -1665,17 +1680,31 @@ function Watch() {
                     ref={playbackBarRef}
                     sx={{
                       mt: "auto",
-                      mb: 2,
-                      mx: 2,
-
+                      mb: 0,
+                      mx: 0,
+                      background:
+                        "linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.9) 100%)",
+                      backdropFilter: "blur(20px)",
+                      borderTop: `1px solid ${alpha(
+                        theme.palette.divider,
+                        0.1
+                      )}`,
                       display: "flex",
                       flexDirection: "column",
                       justifyContent: "space-between",
                       alignItems: "center",
-                      gap: 1,
                       pointerEvents: "all",
+                      px: 4,
+                      py: 2,
+
+                      transform:
+                        showControls || !playing
+                          ? "translateY(0)"
+                          : "translateY(100%)",
+                      transition: "transform 0.5s ease",
                     }}
                   >
+                    {/* Progress Bar Section */}
                     <Box
                       sx={{
                         width: "100%",
@@ -1683,14 +1712,28 @@ function Watch() {
                         flexDirection: "row",
                         alignItems: "center",
                         justifyContent: "center",
-                        gap: 2,
+                        gap: 3,
+                        mb: 2,
                       }}
                     >
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          minWidth: "45px",
+                          textAlign: "center",
+                          fontSize: "0.75rem",
+                          color: "rgba(255,255,255,0.8)",
+                          fontWeight: 500,
+                        }}
+                      >
+                        {getFormatedTime(progress)}
+                      </Typography>
+
                       <Box
                         sx={{
-                          width: "100%",
-                          px: 2,
+                          flex: 1,
                           height: "18px",
+                          position: "relative",
                         }}
                       >
                         <VideoSeekSlider
@@ -1715,34 +1758,40 @@ function Watch() {
                           }}
                         />
                       </Box>
-                      <Box>
-                        <Typography
-                          textAlign="right"
-                          sx={{
-                            mb: "-1px",
-                          }}
-                        >
-                          {getFormatedTime(
-                            (player.current?.getDuration() ?? 0) - progress
-                          )}
-                        </Typography>
-                      </Box>
+
+                      <Typography
+                        variant="caption"
+                        sx={{
+                          minWidth: "45px",
+                          textAlign: "center",
+                          fontSize: "0.75rem",
+                          color: "rgba(255,255,255,0.8)",
+                          fontWeight: 500,
+                        }}
+                      >
+                        {getFormatedTime(
+                          (player.current?.getDuration() ?? 0) - progress
+                        )}
+                      </Typography>
                     </Box>
+
+                    {/* Controls Section */}
                     <Box
                       sx={{
                         display: "flex",
                         flexDirection: "row",
-                        gap: 1,
+                        alignItems: "center",
+                        justifyContent: "space-between",
                         width: "100%",
                       }}
                     >
+                      {/* Left Controls */}
                       <Box
                         sx={{
-                          mr: "auto",
                           display: "flex",
                           flexDirection: "row",
                           alignItems: "center",
-                          justifyContent: "center",
+                          gap: 1,
                         }}
                       >
                         <IconButton
@@ -1754,11 +1803,20 @@ function Watch() {
                           onKeyDown={(e) => {
                             e.preventDefault();
                           }}
+                          sx={{
+                            width: 48,
+                            height: 48,
+                            backgroundColor: "rgba(255,255,255,0.1)",
+                            "&:hover": {
+                              backgroundColor: "rgba(255,255,255,0.2)",
+                              transform: "scale(1.05)",
+                            },
+                          }}
                         >
                           {playing ? (
-                            <PauseRounded fontSize="large" />
+                            <PauseRounded fontSize="medium" />
                           ) : (
-                            <PlayArrowRounded fontSize="large" />
+                            <PlayArrowRounded fontSize="medium" />
                           )}
                         </IconButton>
 
@@ -1767,141 +1825,216 @@ function Watch() {
                         )}
                       </Box>
 
-                      {metadata.type === "movie" && (
-                        <Box
-                          sx={{
-                            mr: "auto",
-                            fontSize: 18,
-                            fontWeight: "bold",
-
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          {metadata.title}
-                        </Box>
-                      )}
-
-                      {metadata.type === "episode" && (
-                        <Box
-                          sx={{
-                            mr: "auto",
-                            fontSize: 18,
-                            fontWeight: "bold",
-
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          {metadata.grandparentTitle} - S{metadata.parentIndex}E
-                          {metadata.index} - {metadata.title}
-                        </Box>
-                      )}
-
-                      <Popover
-                        open={volumePopoverOpen}
-                        anchorEl={volumePopoverAnchor}
-                        onClose={() => {
-                          setVolumePopoverAnchor(null);
-                        }}
-                        anchorOrigin={{
-                          vertical: "top",
-                          horizontal: "center",
-                        }}
-                        transformOrigin={{
-                          vertical: "bottom",
-                          horizontal: "center",
-                        }}
-                        elevation={6}
+                      {/* Center Title */}
+                      <Box
                         sx={{
-                          userSelect: "none",
+                          flex: 1,
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          textAlign: "center",
+                          mx: 4,
                         }}
                       >
-                        <Paper
-                          elevation={6}
+                        {metadata.type === "movie" && (
+                          <Typography
+                            variant="h6"
+                            sx={{
+                              fontSize: "1rem",
+                              fontWeight: 600,
+                              color: "#fff",
+                              textOverflow: "ellipsis",
+                              overflow: "hidden",
+                              whiteSpace: "nowrap",
+                              maxWidth: "100%",
+                            }}
+                          >
+                            {metadata.title}
+                          </Typography>
+                        )}
+
+                        {metadata.type === "episode" && (
+                          <>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                fontSize: "0.75rem",
+                                color: "rgba(255,255,255,0.7)",
+                                textOverflow: "ellipsis",
+                                overflow: "hidden",
+                                whiteSpace: "nowrap",
+                                maxWidth: "100%",
+                              }}
+                            >
+                              {metadata.grandparentTitle}
+                            </Typography>
+                            <Typography
+                              variant="h6"
+                              sx={{
+                                fontSize: "0.9rem",
+                                fontWeight: 600,
+                                color: "#fff",
+                                textOverflow: "ellipsis",
+                                overflow: "hidden",
+                                whiteSpace: "nowrap",
+                                maxWidth: "100%",
+                                mt: 0.5,
+                              }}
+                            >
+                              S{metadata.parentIndex}E{metadata.index} •{" "}
+                              {metadata.title}
+                            </Typography>
+                          </>
+                        )}
+                      </Box>
+
+                      {/* Right Controls */}
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                          gap: 1,
+                        }}
+                      >
+                        <IconButton
+                          onKeyDown={(e) => {
+                            e.preventDefault();
+                          }}
+                          onClick={(event) => {
+                            setVolumePopoverAnchor(event.currentTarget);
+                          }}
                           sx={{
-                            height: "auto",
-                            userSelect: "none",
-                            bgcolor: "#000",
-                            border: (theme) =>
-                              `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-                            py: "20px",
+                            width: 40,
+                            height: 40,
                           }}
                         >
-                          <Slider
-                            sx={{
-                              height: "100px",
-                            }}
-                            value={volume}
-                            onChange={(event, value) => {
-                              setVolume(value as number);
-                              localStorage.setItem("volume", value.toString());
-                            }}
-                            aria-labelledby="continuous-slider"
-                            min={0}
-                            max={100}
-                            step={1}
-                            orientation="vertical"
+                          <VolumeUpRounded fontSize="small" />
+                        </IconButton>
+
+                        {metadata.type === "episode" && !(room && !isHost) && (
+                          <WatchShowChildView
+                            item={metadata}
+                            controlElementsVisibleState={[
+                              controlElementsVisible,
+                              setControlElementsVisible,
+                            ]}
                           />
-                        </Paper>
-                      </Popover>
+                        )}
 
-                      <IconButton
-                        onKeyDown={(e) => {
-                          e.preventDefault();
-                        }}
-                        onClick={(event) => {
-                          setVolumePopoverAnchor(event.currentTarget);
-                        }}
-                      >
-                        <VolumeUpRounded fontSize="large" />
-                      </IconButton>
+                        <IconButton
+                          onKeyDown={(e) => {
+                            e.preventDefault();
+                          }}
+                          onClick={(event) => {
+                            setShowTune(!showTune);
+                            setTunePage(0);
+                            tuneButtonRef.current = event.currentTarget;
+                          }}
+                        >
+                          <TuneRounded fontSize="small" />
+                        </IconButton>
 
-                      {metadata.type === "episode" && !(room && !isHost) && (
-                        <WatchShowChildView item={metadata} />
-                      )}
+                        {room && (
+                          <IconButton
+                            onKeyDown={(e) => {
+                              e.preventDefault();
+                            }}
+                            onClick={() => {
+                              setSyncInterfaceOpen(true);
+                            }}
+                          >
+                            <PeopleRounded fontSize="small" />
+                          </IconButton>
+                        )}
 
-                      <IconButton
-                        onKeyDown={(e) => {
-                          e.preventDefault();
-                        }}
-                        onClick={(event) => {
-                          setShowTune(!showTune);
-                          setTunePage(0);
-                          tuneButtonRef.current = event.currentTarget;
-                        }}
-                      >
-                        <TuneRounded fontSize="large" />
-                      </IconButton>
-
-                      {room && (
                         <IconButton
                           onKeyDown={(e) => {
                             e.preventDefault();
                           }}
                           onClick={() => {
-                            setSyncInterfaceOpen(true);
+                            if (!document.fullscreenElement)
+                              document.documentElement.requestFullscreen();
+                            else document.exitFullscreen();
                           }}
                         >
-                          <PeopleRounded fontSize="large" />
+                          <FullscreenRounded fontSize="small" />
                         </IconButton>
-                      )}
+                      </Box>
+                    </Box>
 
-                      <IconButton
-                        onKeyDown={(e) => {
-                          e.preventDefault();
-                        }}
-                        onClick={() => {
-                          if (!document.fullscreenElement)
-                            document.documentElement.requestFullscreen();
-                          else document.exitFullscreen();
+                    {/* Volume Popover */}
+                    <Popover
+                      open={volumePopoverOpen}
+                      anchorEl={volumePopoverAnchor}
+                      onClose={() => {
+                        setVolumePopoverAnchor(null);
+                      }}
+                      anchorOrigin={{
+                        vertical: "top",
+                        horizontal: "center",
+                      }}
+                      transformOrigin={{
+                        vertical: "bottom",
+                        horizontal: "center",
+                      }}
+                      elevation={0}
+                      sx={{
+                        userSelect: "none",
+                        "& .MuiPaper-root": {
+                          overflow: "hidden",
+                          borderRadius: 1,
+                          background: "transparent",
+                        },
+                      }}
+                    >
+                      <Paper
+                        sx={{
+                          height: "auto",
+                          userSelect: "none",
+                          backgroundColor: "#00000088",
+                          backdropFilter: "blur(20px)",
+                          border: `1px solid ${alpha(
+                            theme.palette.divider,
+                            0.1
+                          )}`,
+                          py: 3,
+                          px: 2,
                         }}
                       >
-                        <FullscreenRounded fontSize="large" />
-                      </IconButton>
-                    </Box>
+                        <Slider
+                          sx={{
+                            height: "100px",
+                            "& .MuiSlider-thumb": {
+                              width: 16,
+                              height: 16,
+                              backgroundColor: theme.palette.primary.main,
+                              border: "2px solid rgba(255,255,255,0.3)",
+                            },
+                            "& .MuiSlider-track": {
+                              backgroundColor: theme.palette.primary.main,
+                              border: "none",
+                              width: 4,
+                            },
+                            "& .MuiSlider-rail": {
+                              backgroundColor: "rgba(255,255,255,0.2)",
+                              width: 4,
+                            },
+                          }}
+                          value={volume}
+                          onChange={(event, value) => {
+                            setVolume(value as number);
+                            localStorage.setItem("volume", value.toString());
+                          }}
+                          aria-labelledby="continuous-slider"
+                          min={0}
+                          max={100}
+                          step={1}
+                          orientation="vertical"
+                        />
+                      </Paper>
+                    </Popover>
                   </Box>
                 </Box>
               </Fade>
@@ -2054,7 +2187,14 @@ function NextEPButton({ queue }: { queue?: Plex.Metadata[] }) {
         anchorEl={anchorEl}
         placement="top-start"
         transition
-        sx={{ zIndex: 10000 }}
+        sx={{
+          zIndex: 10000,
+          "& .MuiPaper-root": {
+            overflow: "hidden",
+            borderRadius: 1,
+            background: "transparent",
+          },
+        }}
         modifiers={[
           {
             name: "offset",
@@ -2072,7 +2212,6 @@ function NextEPButton({ queue }: { queue?: Plex.Metadata[] }) {
                 height: "auto",
                 aspectRatio: "32/8",
                 overflow: "hidden",
-                backgroundColor: "#121216",
 
                 display: "flex",
                 flexDirection: "row",
@@ -2099,6 +2238,8 @@ function NextEPButton({ queue }: { queue?: Plex.Metadata[] }) {
                   alignItems: "flex-start",
                   justifyContent: "flex-start",
                   p: 2,
+
+                  backgroundColor: "#00000088",
                 }}
               >
                 <Typography
@@ -2155,7 +2296,7 @@ function NextEPButton({ queue }: { queue?: Plex.Metadata[] }) {
           onMouseEnter={(e) => setAnchorEl(e.currentTarget)}
           onMouseLeave={() => setAnchorEl(null)}
         >
-          <SkipNextRounded fontSize="large" />
+          <SkipNextRounded fontSize="small" />
         </IconButton>
       )}
     </>
@@ -2183,10 +2324,11 @@ function TuneSettingTab(
         py: 1.5,
         userSelect: "none",
         cursor: "pointer",
-        transition: "all 0.2s ease",
-        borderRadius: 0.5,
+        transition: "all 0.3s ease-in-out",
+        backgroundColor: "#00000088",
         "&:hover": {
-          backgroundColor: alpha(theme.palette.primary.main, 0.15),
+          transition: "all 0s ease-in-out",
+          backgroundColor: "#000000ee",
         },
       }}
       onClick={() => {

@@ -617,14 +617,9 @@ function MetaScreen() {
                   variant="contained"
                   sx={{
                     height: "38px",
-                    backgroundColor: (theme) => theme.palette.background.paper,
-                    color: (theme) => theme.palette.text.primary,
                     fontWeight: "bold",
                     letterSpacing: "0.1em",
                     textTransform: "uppercase",
-                    "&:hover": {
-                      backgroundColor: (theme) => theme.palette.primary.dark,
-                    },
                     gap: 1,
                     transition: "all 0.2s ease-in-out",
                   }}
@@ -691,15 +686,9 @@ function MetaScreen() {
                     variant="contained"
                     sx={{
                       height: "38px",
-                      backgroundColor: (theme) =>
-                        theme.palette.background.paper,
-                      color: (theme) => theme.palette.text.primary,
                       fontWeight: "bold",
                       letterSpacing: "0.1em",
                       textTransform: "uppercase",
-                      "&:hover": {
-                        backgroundColor: (theme) => theme.palette.primary.main,
-                      },
                       transition: "all 0.2s ease-in-out",
                       display: "flex",
                       gap: 1,
@@ -1053,14 +1042,9 @@ function MetaPage1({
           <Button
             variant="contained"
             sx={{
-              backgroundColor: (theme) => theme.palette.background.paper,
-              color: (theme) => theme.palette.text.primary,
               fontWeight: "bold",
               letterSpacing: "0.1em",
               textTransform: "uppercase",
-              "&:hover": {
-                backgroundColor: (theme) => theme.palette.primary.main,
-              },
               transition: "all 0.2s ease-in-out",
             }}
             onClick={() => {
@@ -1073,14 +1057,9 @@ function MetaPage1({
           <Button
             variant="contained"
             sx={{
-              backgroundColor: (theme) => theme.palette.background.paper,
-              color: (theme) => theme.palette.text.primary,
               fontWeight: "bold",
               letterSpacing: "0.1em",
               textTransform: "uppercase",
-              "&:hover": {
-                backgroundColor: (theme) => theme.palette.primary.main,
-              },
               transition: "all 0.2s ease-in-out",
             }}
             onClick={() => {
@@ -1099,14 +1078,9 @@ function MetaPage1({
           <Button
             variant="contained"
             sx={{
-              backgroundColor: (theme) => theme.palette.background.paper,
-              color: (theme) => theme.palette.text.primary,
               fontWeight: "bold",
               letterSpacing: "0.1em",
               textTransform: "uppercase",
-              "&:hover": {
-                backgroundColor: (theme) => theme.palette.primary.main,
-              },
               transition: "all 0.2s ease-in-out",
             }}
             onClick={async () => {
@@ -1131,14 +1105,9 @@ function MetaPage1({
           <Button
             variant="contained"
             sx={{
-              backgroundColor: (theme) => theme.palette.background.paper,
-              color: (theme) => theme.palette.text.primary,
               fontWeight: "bold",
               letterSpacing: "0.1em",
               textTransform: "uppercase",
-              "&:hover": {
-                backgroundColor: (theme) => theme.palette.primary.main,
-              },
               transition: "all 0.2s ease-in-out",
             }}
             onClick={async () => {
@@ -1867,14 +1836,9 @@ function RatingButton({ item }: { item: Plex.Metadata }): JSX.Element {
         variant="contained"
         sx={{
           height: "38px",
-          backgroundColor: (theme) => theme.palette.background.paper,
-          color: (theme) => theme.palette.text.primary,
           fontWeight: "bold",
           letterSpacing: "0.1em",
           textTransform: "uppercase",
-          "&:hover": {
-            backgroundColor: (theme) => theme.palette.primary.main,
-          },
           transition: "all 0.2s ease-in-out",
           display: "flex",
           gap: 1,

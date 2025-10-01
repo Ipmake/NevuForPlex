@@ -61,13 +61,6 @@ function Library() {
             textTransform: "uppercase",
             gap: "10px",
             transition: "all 0.2s ease-in-out",
-
-            backgroundColor: (theme) => page === "recommendations" ? theme.palette.primary.dark : "transparent",
-            color: theme => theme.palette.text.primary,
-            "&:hover": {
-              backgroundColor: (theme) => page === "recommendations" ? theme.palette.primary.dark : "transparent",
-              transition: "all 0.4s ease",
-            },
           }}
           onClick={() => setPage("recommendations")}
         >
@@ -81,13 +74,6 @@ function Library() {
             textTransform: "uppercase",
             gap: "10px",
             transition: "all 0.2s ease-in-out",
-
-            backgroundColor: (theme) => page === "browse" ? theme.palette.primary.dark : "transparent",
-            color: theme => theme.palette.text.primary,
-            "&:hover": {
-              backgroundColor: (theme) => page === "browse" ? theme.palette.primary.dark : "transparent",
-              transition: "all 0.4s ease",
-            },
           }}
           onClick={() => setPage("browse")}
         >

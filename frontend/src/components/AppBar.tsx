@@ -106,12 +106,15 @@ function Appbar() {
         height: 64,
         transition: "all 0.5s ease-in-out",
 
-        bgcolor: (theme) => (scrollAtTop ? "#00000000" : "#121216EE"),
+        bgcolor: (theme) => (scrollAtTop ? "#00000000" : theme.palette.background.default + "88"),
         backdropFilter: scrollAtTop ? "blur(0px)" : "blur(20px)",
         boxShadow: scrollAtTop ? "none" : "0px 0px 10px 0px #000000AA",
 
-        borderBottomLeftRadius: "10px",
-        borderBottomRightRadius: "10px",
+        borderRadius: "0px",
+        border: "none",
+
+        borderBottomLeftRadius: "4px",
+        borderBottomRightRadius: "4px",
         zIndex: 99,
       }}
     >
@@ -296,13 +299,6 @@ S - Skip onscreen markers (intro, credits, etc)
               })
             );
           }}
-          sx={{
-            borderRadius: "10px",
-            padding: 1,
-            "&:hover": {
-              backgroundColor: "#000000AA",
-            },
-          }}
         >
           <BookmarkRounded />
         </IconButton>
@@ -311,13 +307,6 @@ S - Skip onscreen markers (intro, credits, etc)
           <IconButton
             onClick={() => {
               useSyncInterfaceState.getState().setOpen(true);
-            }}
-            sx={{
-              borderRadius: "10px",
-              padding: 1,
-              "&:hover": {
-                backgroundColor: "#000000AA",
-              },
             }}
           >
             <PeopleRounded />
@@ -332,7 +321,7 @@ S - Skip onscreen markers (intro, credits, etc)
           sx={{
             width: 45,
             height: 45,
-            borderRadius: "10px",
+            borderRadius: "4px",
             cursor: "pointer",
 
             "&:hover": {
@@ -524,12 +513,6 @@ function SearchBar() {
         }}
         sx={{
           backgroundColor: "#121212AA",
-          borderRadius: "7px",
-
-          // round the corners of the input
-          "& .MuiOutlinedInput-root": {
-            borderRadius: "7px",
-          },
           transition: "all 0.2s ease-in-out",
           zIndex: 11000,
         }}
@@ -544,7 +527,7 @@ function SearchBar() {
         open={searchOpen && searchValue.length > 0}
         placement="bottom-end"
         sx={{
-          borderRadius: "7px",
+          borderRadius: "4px",
           backgroundColor: "#121212AA",
           backdropFilter: "blur(10px)",
           transition: "width 0.2s ease-in-out",
@@ -588,7 +571,7 @@ function SearchBar() {
                     alignItems: "flex-start",
                     justifyContent: "flex-start",
                     width: "100%",
-                    borderRadius: "5px",
+                    borderRadius: "4px",
                     backgroundColor: (theme) => theme.palette.background.paper,
                     padding: "7px 10px",
 
@@ -628,7 +611,7 @@ function SearchBar() {
                     style={{
                       aspectRatio: 1,
                       objectFit: "cover",
-                      borderRadius: "5px",
+                      borderRadius: "4px",
                       width: 50,
                       height: 50,
                     }}
@@ -656,7 +639,7 @@ function SearchBar() {
                     alignItems: "flex-start",
                     justifyContent: "flex-start",
                     width: "100%",
-                    borderRadius: "5px",
+                    borderRadius: "4px",
                     backgroundColor: (theme) => theme.palette.background.paper,
                     padding: "7px 10px",
 
@@ -750,7 +733,7 @@ function LibrariesDropdown({ libraries }: { libraries: Plex.LibarySection[] }) {
             sx={{
               backgroundColor: "#121212EE",
               backdropFilter: "blur(20px)",
-              borderRadius: "10px",
+              borderRadius: "4px",
               boxShadow: "0px 4px 20px 0px #000000AA",
               padding: "15px",
               maxWidth: "600px",
@@ -789,7 +772,7 @@ function LibrariesDropdown({ libraries }: { libraries: Plex.LibarySection[] }) {
                         padding: "12px 16px",
                         cursor: "pointer",
                         transition: "all 0.2s ease-in-out",
-                        borderRadius: "6px",
+                        borderRadius: "4px",
                         textAlign: "left",
                         minHeight: "48px",
                         display: "flex",

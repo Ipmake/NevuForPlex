@@ -263,15 +263,10 @@ function HeroDisplay({ item }: { item: Plex.Metadata }) {
             <Button
               variant="contained"
               sx={{
-                backgroundColor: (theme) => theme.palette.background.paper,
-                color: (theme) => theme.palette.text.primary,
                 fontWeight: "bold",
                 letterSpacing: "0.1em",
                 textTransform: "uppercase",
                 gap: "10px",
-                "&:hover": {
-                  backgroundColor: (theme) => theme.palette.primary.dark,
-                },
                 transition: "all 0.2s ease-in-out",
               }}
               onClick={() => {
@@ -285,14 +280,10 @@ function HeroDisplay({ item }: { item: Plex.Metadata }) {
             <Button
               variant="contained"
               sx={{
-                backgroundColor: (theme) => theme.palette.background.paper,
-                color: (theme) => theme.palette.text.primary,
                 fontWeight: "bold",
                 letterSpacing: "0.1em",
                 textTransform: "uppercase",
                 "&:hover": {
-                  backgroundColor: (theme) => theme.palette.primary.dark,
-
                   "& > *:nth-child(2)": {
                     width: "91px",
                     ml: "10px",

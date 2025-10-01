@@ -354,13 +354,8 @@ function MovieItemLegacy({
             sx={{
               width: "100%",
               height: "100%",
-              backgroundColor: "#CCCCCC",
-              color: "#000000",
               letterSpacing: "0.1em",
               textTransform: "uppercase",
-              "&:hover": {
-                backgroundColor: "primary.main",
-              },
               gap: 1,
               transition: "all 0.2s ease-in-out",
               padding: "0px 10px",
@@ -439,14 +434,9 @@ function MovieItemLegacy({
             sx={{
               width: "fit-content",
               height: "100%",
-              backgroundColor: "#555555",
-              color: "#FFFFFF",
               fontSize: "12px",
               letterSpacing: "0.1em",
               textTransform: "uppercase",
-              "&:hover": {
-                backgroundColor: "#333333",
-              },
               gap: 1,
               transition: "all 0.2s ease-in-out",
 
@@ -470,14 +460,9 @@ function MovieItemLegacy({
             sx={{
               width: "fit-content",
               height: "100%",
-              backgroundColor: "#555555",
-              color: "#FFFFFF",
               fontSize: "12px",
               letterSpacing: "0.1em",
               textTransform: "uppercase",
-              "&:hover": {
-                backgroundColor: "#333333",
-              },
               gap: 1,
               transition: "all 0.2s ease-in-out",
 

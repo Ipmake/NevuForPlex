@@ -367,19 +367,23 @@ function MovieItem({
           minWidth: itemsPerPage
             ? `calc((100vw / ${itemsPerPage}) - 10px - (5vw / ${itemsPerPage}))`
             : "100%",
-          backgroundColor: "rgba(18, 18, 22, 0.9)",
+          backgroundColor: "rgba(18, 18, 22, 0.7)",
+          backdropFilter: "blur(15px)",
+          border: "1px solid rgba(255,255,255,0.08)",
 
-          borderRadius: "7px",
+          borderRadius: "6px",
           overflow: "hidden",
           mb: "0px",
           position: "relative",
-          boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.2)",
+          boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.3)",
 
           "&:hover": {
             transform: "scale(1.08)",
             transition: "all 0.4s cubic-bezier(0.25,0.10,0.25,1.00)",
             zIndex: 10,
-            boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.3)",
+            boxShadow: "0px 4px 15px rgba(0, 0, 0, 0.4)",
+            border: "1px solid rgba(255,255,255,0.15)",
+            backgroundColor: "rgba(18, 18, 22, 0.85)",
             position: "relative",
             pb: "10px",
             mb: "-42px",
@@ -465,7 +469,7 @@ function MovieItem({
               opacity: previewPlaybackState.playing ? 1 : 0,
               transition: "all 2s cubic-bezier(0.25,0.10,0.25,1.00)",
               backgroundColor: previewPlaybackState.playing
-                ? "rgba(18, 18, 22, 0.9)"
+                ? "rgba(18, 25, 39, 0.95)"
                 : "transparent",
               pointerEvents: "none",
 
@@ -498,13 +502,19 @@ function MovieItem({
 
           <IconButton
             sx={{
-              backgroundColor: "#00000088",
+              backgroundColor: "rgba(18, 25, 39, 0.8)",
+              backdropFilter: "blur(10px)",
+              border: "1px solid rgba(255,255,255,0.2)",
               opacity: previewPlaybackState.url ? 1 : 0,
               transition: "all 1s cubic-bezier(0.25,0.10,0.25,1.00)",
               position: "absolute",
               bottom: "10px",
               right: "10px",
               zIndex: 10,
+              "&:hover": {
+                backgroundColor: "rgba(18, 25, 39, 0.95)",
+                transform: "scale(1.05)",
+              },
             }}
             onClick={(e) => {
               e.stopPropagation();
@@ -532,7 +542,9 @@ function MovieItem({
                 position: "absolute",
                 top: "10px",
                 right: "10px",
-                backgroundColor: "rgba(0, 0, 0, 0.6)",
+                backgroundColor: "rgba(18, 25, 39, 0.9)",
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(255,255,255,0.2)",
                 borderRadius: "50%",
                 width: "32px",
                 height: "32px",
@@ -560,10 +572,12 @@ function MovieItem({
             value={((item?.viewOffset ?? 0) / item.duration) * 100}
             sx={{
               width: "100%",
-              height: "3px",
+              height: "4px",
               bgcolor: "rgba(255, 255, 255, 0.1)",
+              borderRadius: "2px",
               "& .MuiLinearProgress-bar": {
                 backgroundColor: (theme) => theme.palette.primary.main,
+                borderRadius: "2px",
               },
             }}
           />
@@ -586,9 +600,9 @@ function MovieItem({
         >
           <Typography
             sx={{
-              fontSize: "12px",
-              fontWeight: "500",
-              letterSpacing: "0.05em",
+              fontSize: "11px",
+              fontWeight: "600",
+              letterSpacing: "0.1em",
               color: (theme) => theme.palette.primary.light,
               textTransform: "uppercase",
               opacity: 0.9,
@@ -599,20 +613,19 @@ function MovieItem({
           </Typography>
 
           <Typography
-            style={{
-              fontSize: "1.2rem",
+            sx={{
+              fontSize: "1.1rem",
               fontWeight: "600",
-              color: "#FFFFFF",
+              color: (theme) => theme.palette.text.primary,
               textOverflow: "ellipsis",
               overflow: "hidden",
               whiteSpace: "nowrap",
               maxLines: 1,
               maxInlineSize: "100%",
               marginTop: ["episode"].includes(item.type) ? "2px" : "0px",
-            }}
-            sx={{
+              lineHeight: 1.3,
               "@media (max-width: 2000px)": {
-                fontSize: "1.1rem",
+                fontSize: "1rem",
               },
             }}
           >
@@ -629,14 +642,16 @@ function MovieItem({
                 });
               }}
               sx={{
-                fontSize: "0.9rem",
-                fontWeight: "normal",
-                color: "#FFFFFF",
-                opacity: 0.75,
+                fontSize: "0.85rem",
+                fontWeight: "500",
+                color: (theme) => theme.palette.text.secondary,
+                opacity: 0.8,
                 mb: 1,
-                transition: "opacity 0.4s cubic-bezier(0.25,0.10,0.25,1.00)",
+                transition: "all 0.4s cubic-bezier(0.25,0.10,0.25,1.00)",
+                cursor: "pointer",
                 "&:hover": {
                   opacity: 1,
+                  color: (theme) => theme.palette.primary.light,
                   textDecoration: "none",
                 },
                 textOverflow: "ellipsis",
@@ -702,10 +717,10 @@ function MovieItem({
             {item.duration && ["episode", "movie"].includes(item.type) && (
               <Typography
                 sx={{
-                  fontSize: "13px",
-                  fontWeight: "400",
-                  color: "#FFFFFF",
-                  opacity: 0.7,
+                  fontSize: "12px",
+                  fontWeight: "500",
+                  color: (theme) => theme.palette.text.secondary,
+                  opacity: 0.8,
                 }}
               >
                 {durationToText(item.duration)}
@@ -716,10 +731,10 @@ function MovieItem({
               (item.seasonCount ?? item.childCount) && (
                 <Typography
                   sx={{
-                    fontSize: "13px",
-                    fontWeight: "400",
-                    color: "#FFFFFF",
-                    opacity: 0.7,
+                    fontSize: "12px",
+                    fontWeight: "500",
+                    color: (theme) => theme.palette.text.secondary,
+                    opacity: 0.8,
                   }}
                 >
                   {(item.seasonCount ?? item.childCount ?? 1) > 1
@@ -733,10 +748,10 @@ function MovieItem({
             {item.year && (
               <Typography
                 sx={{
-                  fontSize: "13px",
-                  fontWeight: "400",
-                  color: "#FFFFFF",
-                  opacity: 0.7,
+                  fontSize: "12px",
+                  fontWeight: "500",
+                  color: (theme) => theme.palette.text.secondary,
+                  opacity: 0.8,
                 }}
               >
                 {item.year}
@@ -749,7 +764,7 @@ function MovieItem({
           sx={{
             width: "100%",
             height: "0px", // 32px
-            overflow: "hidden",
+            overflow: hovered ? "visible" : "hidden",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -758,6 +773,7 @@ function MovieItem({
           }}
         >
           <Box
+            className="movie-item-buttons"
             sx={{
               width: "100%",
               display: "flex",
@@ -773,18 +789,13 @@ function MovieItem({
               sx={{
                 width: "100%",
                 height: "100%",
-                backgroundColor: (theme) => theme.palette.background.paper,
-                color: (theme) => theme.palette.primary.contrastText,
                 letterSpacing: "0.1em",
                 textTransform: "uppercase",
-                "&:hover": {
-                  backgroundColor: (theme) => theme.palette.primary.dark,
-                },
                 gap: 0.5,
                 transition: "all 0.4s cubic-bezier(0.25,0.10,0.25,1.00)",
                 padding: "0px 10px",
                 fontSize: "13px",
-                borderRadius: "6px",
+                fontWeight: 600,
                 boxShadow: "none",
               }}
               disabled={playButtonLoading}
@@ -820,17 +831,9 @@ export function WatchListButton({ item }: { item: Plex.Metadata }) {
     <Button
       variant="contained"
       sx={{
-        width: "48px",
         height: "38px",
-        backgroundColor: (theme) => theme.palette.background.paper,
-        color: (theme) => theme.palette.text.primary,
-        borderRadius: "6px",
-        "&:hover": {
-          backgroundColor: (theme) => theme.palette.primary.dark,
-        },
         transition: "all 0.4s cubic-bezier(0.25,0.10,0.25,1.00)",
         boxShadow: "none",
-
         display: "flex",
         alignItems: "center",
         justifyContent: "center",

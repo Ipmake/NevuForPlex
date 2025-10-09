@@ -1,6 +1,6 @@
 import { SkipNext } from "@mui/icons-material";
-import { Box, Button, Typography, useTheme } from "@mui/material";
-import React, { useState, useEffect } from "react";
+import { alpha, Box, Button, Typography, useTheme } from "@mui/material";
+import React, { useState, useEffect, useCallback } from "react";
 import { queryBuilder } from "../plex/QuickFunctions";
 import { useUserSettings } from "../states/UserSettingsState";
 
@@ -21,8 +21,8 @@ function PlaybackNextEPButton({
 }) {
   const theme = useTheme();
   const [countdown, setCountdown] = useState<number | null>(null);
-  const [isHovering, setIsHovering] = useState(false);
-  const countdownDuration = metadata.type === "movie" ? 15 : 4;
+  const [showWatchCredits, setShowWatchCredits] = useState(false);
+  const countdownDuration = metadata.type === "movie" ? 30 : 5;
 
   const enableAutoNext =
     useUserSettings.getState().settings.AUTO_NEXT_EP === "true";
@@ -31,27 +31,11 @@ function PlaybackNextEPButton({
   useEffect(() => {
     if (metadata?.Marker && playQueue && playQueue[1]) {
       setCountdown(countdownDuration);
+      setShowWatchCredits(true);
     }
-  }, [metadata, playQueue]);
+  }, [metadata, playQueue, countdownDuration]);
 
-  // Handle countdown timer
-  useEffect(() => {
-    if (countdown === null || isHovering || !playing || !enableAutoNext) return;
-
-    if (countdown <= 0) {
-      // Auto-navigate when timer reaches 0
-      handleNavigation();
-      return;
-    }
-
-    const timer = setTimeout(() => {
-      setCountdown((prev) => (prev !== null ? prev - 0.05 : null));
-    }, 50);
-
-    return () => clearTimeout(timer);
-  }, [countdown, isHovering, playing]);
-
-  const handleNavigation = () => {
+  const handleNavigation = useCallback(() => {
     if (!player.current || !metadata?.Marker) return;
 
     if (metadata.type === "movie")
@@ -73,7 +57,29 @@ function PlaybackNextEPButton({
       );
 
     navigate(`/watch/${next.ratingKey}?t=0`);
+  }, [player, metadata, playQueue, navigate]);
+
+  const handleWatchCredits = () => {
+    setCountdown(null);
+    setShowWatchCredits(false);
   };
+
+  // Handle countdown timer
+  useEffect(() => {
+    if (countdown === null || !showWatchCredits || !playing || !enableAutoNext) return;
+
+    if (countdown <= 0) {
+      // Auto-navigate when timer reaches 0
+      handleNavigation();
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setCountdown((prev) => (prev !== null ? prev - 0.05 : null));
+    }, 50);
+
+    return () => clearTimeout(timer);
+  }, [countdown, showWatchCredits, playing, enableAutoNext, handleNavigation]);
 
   // Calculate progress percentage
   const progressPercentage =
@@ -82,57 +88,92 @@ function PlaybackNextEPButton({
       : 0;
 
   return (
-    <Button
-      sx={{
-        width: "auto",
-        px: 3,
-        py: 1,
-        position: "relative",
-        overflow: "hidden",
-        color: (theme) => theme.palette.text.primary,
-        transition: "all 0.2s linear",
-
-        "&:hover": {
-          background: (theme) => theme.palette.primary.dark,
-          color: (theme) => theme.palette.text.primary,
-          boxShadow: "0px 0px 10px 0px #000000AA",
-          px: 4,
-        },
-      }}
-      style={{
-        background: `linear-gradient(90deg, 
-        ${theme.palette.primary.main} ${progressPercentage}%, 
-        ${theme.palette.background.paper} ${progressPercentage}%)`,
-      }}
-      variant="contained"
-      onClick={handleNavigation}
-      onMouseEnter={() => setIsHovering(true)}
-    >
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-          transition: "all 0.25s",
-          gap: 1,
-        }}
-      >
-        <SkipNext />{" "}
-        <Typography
+    <Box sx={{ display: "flex", gap: 2 }}>
+      {showWatchCredits && countdown !== null && countdown > 0 && (
+        <Button
           sx={{
-            fontSize: 14,
-            fontWeight: "bold",
+            px: 2,
+            py: 1.5,
+            backgroundColor: "rgba(255,255,255,0.1)",
+            backdropFilter: "blur(20px)",
+            border: `1px solid ${alpha(theme.palette.divider, 0.3)}`,
+            color: "#fff",
+            "&:hover": {
+              backgroundColor: "rgba(255,255,255,0.2)",
+              transform: "translateY(-2px)",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+            },
+          }}
+          variant="outlined"
+          onClick={handleWatchCredits}
+        >
+          <Typography
+            sx={{
+              fontSize: "0.875rem",
+              fontWeight: 600,
+              letterSpacing: "0.025em",
+            }}
+          >
+            Watch Credits
+          </Typography>
+        </Button>
+      )}
+      
+      <Button
+        sx={{
+          px: 3,
+          py: 1.5,
+          backgroundColor: "rgba(0,0,0,0.8)",
+          backdropFilter: "blur(20px)",
+          border: `1px solid ${alpha(theme.palette.divider, 0.3)}`,
+          color: "#fff",
+          "&:hover": {
+            backgroundColor: "rgba(0,0,0,0.9)",
+            transform: "translateY(-2px)",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+            border: `1px solid ${alpha(theme.palette.primary.main, 0.5)}`,
+          },
+        }}
+        style={{
+          background: `linear-gradient(90deg, 
+          ${theme.palette.primary.main} ${progressPercentage}%, 
+          rgba(0,0,0,0.8) ${progressPercentage}%)`,
+        }}
+        variant="contained"
+        onClick={handleNavigation}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+            transition: "all 0.25s",
+            gap: 1,
           }}
         >
-          {metadata.type === "movie"
-            ? "Skip Credits"
-            : playQueue && playQueue[1]
-            ? `Next Episode`
-            : "Return to Show"}
-        </Typography>
-      </Box>
-    </Button>
+          <SkipNext sx={{ fontSize: 18 }} />
+          <Typography
+            sx={{
+              fontSize: "0.875rem",
+              fontWeight: 600,
+              letterSpacing: "0.025em",
+            }}
+          >
+            {metadata.type === "movie"
+              ? "Skip Credits"
+              : playQueue && playQueue[1]
+              ? `Next Episode`
+              : "Return to Show"}
+            {countdown !== null && countdown > 0 && (
+              <span style={{ marginLeft: "8px" }}>
+                ({Math.ceil(countdown)}s)
+              </span>
+            )}
+          </Typography>
+        </Box>
+      </Button>
+    </Box>
   );
 }
 

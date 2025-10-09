@@ -17,6 +17,7 @@ import {
   SxProps,
   TextField,
   Typography,
+  Grid
 } from "@mui/material";
 import React, { JSX, useEffect, useState } from "react";
 import {
@@ -80,17 +81,17 @@ function Appbar() {
   const navigate = useNavigate();
 
   useEffect(() => {
-  getAllLibraries().then((res) => {
-    const filtered = res.filter((library) => {
-      const key = `LIBRARY_${library.uuid}`;
-      const rawValue = settings[key];
+    getAllLibraries().then((res) => {
+      const filtered = res.filter((library) => {
+        const key = `LIBRARY_${library.uuid}`;
+        const rawValue = settings[key];
 
-      return rawValue === undefined || rawValue === "true";
+        return rawValue === undefined || rawValue === "true";
+      });
+
+      setLibraries(filtered.filter((lib) => ["movie", "show"].includes(lib.type)));
     });
-
-    setLibraries(filtered);
-  });
-}, [settings]);
+  }, [settings]);
 
   return (
     <AppBar
@@ -105,12 +106,15 @@ function Appbar() {
         height: 64,
         transition: "all 0.5s ease-in-out",
 
-        bgcolor: (theme) => (scrollAtTop ? "#00000000" : "#121216EE"),
+        bgcolor: (theme) => (scrollAtTop ? "#00000000" : theme.palette.background.default + "88"),
         backdropFilter: scrollAtTop ? "blur(0px)" : "blur(20px)",
         boxShadow: scrollAtTop ? "none" : "0px 0px 10px 0px #000000AA",
 
-        borderBottomLeftRadius: "10px",
-        borderBottomRightRadius: "10px",
+        borderRadius: "0px",
+        border: "none",
+
+        borderBottomLeftRadius: "4px",
+        borderBottomRightRadius: "4px",
         zIndex: 99,
       }}
     >
@@ -262,18 +266,19 @@ S - Skip onscreen markers (intro, credits, etc)
             Home
           </HeadLink>
           {!libraries && <CircularProgress size="small" />}
-          {libraries
-            ?.filter((e) => ["movie", "show"].includes(e.type))
-            .map((library) => (
-              <HeadLink
-                to={`/browse/${library.key}`}
-                key={library.key}
-                library={library}
-                active={location.pathname.includes(`/browse/${library.key}`)}
-              >
-                {library.title}
-              </HeadLink>
-            ))}
+          {libraries?.slice(0, 4).map((library) => (
+            <HeadLink
+              to={`/browse/${library.key}`}
+              key={library.key}
+              library={library}
+              active={location.pathname.includes(`/browse/${library.key}`)}
+            >
+              {library.title}
+            </HeadLink>
+          ))}
+          {libraries && libraries.length > 4 && (
+            <LibrariesDropdown libraries={libraries} />
+          )}
         </Box>
       </Box>
 
@@ -294,13 +299,6 @@ S - Skip onscreen markers (intro, credits, etc)
               })
             );
           }}
-          sx={{
-            borderRadius: "10px",
-            padding: 1,
-            "&:hover": {
-              backgroundColor: "#000000AA",
-            },
-          }}
         >
           <BookmarkRounded />
         </IconButton>
@@ -309,13 +307,6 @@ S - Skip onscreen markers (intro, credits, etc)
           <IconButton
             onClick={() => {
               useSyncInterfaceState.getState().setOpen(true);
-            }}
-            sx={{
-              borderRadius: "10px",
-              padding: 1,
-              "&:hover": {
-                backgroundColor: "#000000AA",
-              },
             }}
           >
             <PeopleRounded />
@@ -330,7 +321,7 @@ S - Skip onscreen markers (intro, credits, etc)
           sx={{
             width: 45,
             height: 45,
-            borderRadius: "10px",
+            borderRadius: "4px",
             cursor: "pointer",
 
             "&:hover": {
@@ -522,12 +513,6 @@ function SearchBar() {
         }}
         sx={{
           backgroundColor: "#121212AA",
-          borderRadius: "7px",
-
-          // round the corners of the input
-          "& .MuiOutlinedInput-root": {
-            borderRadius: "7px",
-          },
           transition: "all 0.2s ease-in-out",
           zIndex: 11000,
         }}
@@ -542,7 +527,7 @@ function SearchBar() {
         open={searchOpen && searchValue.length > 0}
         placement="bottom-end"
         sx={{
-          borderRadius: "7px",
+          borderRadius: "4px",
           backgroundColor: "#121212AA",
           backdropFilter: "blur(10px)",
           transition: "width 0.2s ease-in-out",
@@ -586,7 +571,7 @@ function SearchBar() {
                     alignItems: "flex-start",
                     justifyContent: "flex-start",
                     width: "100%",
-                    borderRadius: "5px",
+                    borderRadius: "4px",
                     backgroundColor: (theme) => theme.palette.background.paper,
                     padding: "7px 10px",
 
@@ -626,7 +611,7 @@ function SearchBar() {
                     style={{
                       aspectRatio: 1,
                       objectFit: "cover",
-                      borderRadius: "5px",
+                      borderRadius: "4px",
                       width: 50,
                       height: 50,
                     }}
@@ -654,7 +639,7 @@ function SearchBar() {
                     alignItems: "flex-start",
                     justifyContent: "flex-start",
                     width: "100%",
-                    borderRadius: "5px",
+                    borderRadius: "4px",
                     backgroundColor: (theme) => theme.palette.background.paper,
                     padding: "7px 10px",
 
@@ -694,6 +679,148 @@ function SearchBar() {
             return null;
           })}
       </Popper>
+    </>
+  );
+}
+
+function LibrariesDropdown({ libraries }: { libraries: Plex.LibarySection[] }) {
+  const [librariesAnchorEl, setLibrariesAnchorEl] = React.useState<null | HTMLElement>(null);
+  const librariesOpen = Boolean(librariesAnchorEl);
+  const navigate = useNavigate();
+  const [, setSearchParams] = useSearchParams();
+
+  const remainingLibraries = libraries.slice(4);
+
+  return (
+    <>
+      <Box
+        sx={{
+          position: "relative",
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+        }}
+        onMouseEnter={(e) => setLibrariesAnchorEl(e.currentTarget)}
+        onMouseLeave={() => setLibrariesAnchorEl(null)}
+      >
+        <Typography
+          sx={{
+            textDecoration: "none",
+            color: "inherit",
+            fontWeight: 500,
+            transition: "all 0.2s ease-in-out",
+            fontFamily: '"Inter Variable", sans-serif',
+            userSelect: "none",
+            cursor: "pointer",
+            "&:hover": {
+              color: (theme) => theme.palette.primary.main,
+            },
+          }}
+        >
+          +{remainingLibraries.length} more
+        </Typography>
+
+        <Popper
+          anchorEl={librariesAnchorEl}
+          open={librariesOpen}
+          placement="bottom-start"
+          sx={{
+            zIndex: 12000,
+            mt: 1,
+          }}
+        >
+          <Box
+            sx={{
+              backgroundColor: "#121212EE",
+              backdropFilter: "blur(20px)",
+              borderRadius: "4px",
+              boxShadow: "0px 4px 20px 0px #000000AA",
+              padding: "15px",
+              maxWidth: "600px",
+              maxHeight: "400px",
+              minWidth: "300px",
+              overflow: "hidden",
+            }}
+            onMouseEnter={() => setLibrariesAnchorEl(librariesAnchorEl)}
+            onMouseLeave={() => setLibrariesAnchorEl(null)}
+          >
+            <Box
+              sx={{
+                maxHeight: "370px",
+                overflowY: "auto",
+                paddingRight: "5px",
+                "&::-webkit-scrollbar": {
+                  width: "4px",
+                },
+                "&::-webkit-scrollbar-track": {
+                  background: "transparent",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  background: (theme) => theme.palette.primary.main + "60",
+                  borderRadius: "2px",
+                },
+                "&::-webkit-scrollbar-thumb:hover": {
+                  background: (theme) => theme.palette.primary.main + "80",
+                },
+              }}
+            >
+              <Grid container spacing={1.5}>
+                {remainingLibraries.map((library) => (
+                  <Grid size={{ xs: 12, sm: 6, md: 4 }} key={library.key}>
+                    <Box
+                      sx={{
+                        padding: "12px 16px",
+                        cursor: "pointer",
+                        transition: "all 0.2s ease-in-out",
+                        borderRadius: "4px",
+                        textAlign: "left",
+                        minHeight: "48px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "flex-start",
+                        width: "100%",
+                        backgroundColor: "rgba(255, 255, 255, 0.05)",
+                        "&:hover": {
+                          backgroundColor: "rgba(255, 255, 255, 0.1)",
+                          transform: "translateY(-1px)",
+                        },
+                      }}
+                      onClick={() => {
+                        navigate(`/browse/${library.key}`);
+                        setLibrariesAnchorEl(null);
+                      }}
+                      onContextMenu={(e) => {
+                        e.preventDefault();
+                        setSearchParams(
+                          new URLSearchParams({
+                            bkey: `/library/sections/${library.key}/all`,
+                          })
+                        );
+                        setLibrariesAnchorEl(null);
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontWeight: 500,
+                          fontFamily: '"Inter Variable", sans-serif',
+                          fontSize: "14px",
+                          lineHeight: "1.3",
+                          textOverflow: "ellipsis",
+                          overflow: "hidden",
+                          whiteSpace: "nowrap",
+                          width: "100%",
+                        }}
+                      >
+                        {library.title}
+                      </Typography>
+                    </Box>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+          </Box>
+        </Popper>
+      </Box>
     </>
   );
 }

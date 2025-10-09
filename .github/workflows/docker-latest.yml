@@ -31,6 +31,20 @@ jobs:
         run: npm run build
         working-directory: frontend
 
+      - name: Extract version from tag
+        id: extract_version
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            VERSION=${{ github.event.release.tag_name }}
+            # Remove 'v' prefix if present
+            VERSION=${VERSION#v}
+            echo "version=${VERSION}" >> $GITHUB_OUTPUT
+            echo "is_release=true" >> $GITHUB_OUTPUT
+          else
+            echo "version=latest" >> $GITHUB_OUTPUT
+            echo "is_release=false" >> $GITHUB_OUTPUT
+          fi
+
       - name: Log in to Docker Hub
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:
@@ -41,10 +55,40 @@ jobs:
         run: docker buildx create --name nevuBuilder --use
 
       - name: Build and push the amd64 image
-        run: docker buildx build --platform linux/amd64 -t ipmake/nevu:latest-amd64 . --push
+        run: |
+          if [ "${{ steps.extract_version.outputs.is_release }}" = "true" ]; then
+            docker buildx build --platform linux/amd64 \
+              -t ipmake/nevu:latest-amd64 \
+              -t ipmake/nevu:${{ steps.extract_version.outputs.version }}-amd64 \
+              . --push
+          else
+            docker buildx build --platform linux/amd64 -t ipmake/nevu:latest-amd64 . --push
+          fi
 
       - name: Build and push the arm64 image
-        run: docker buildx build --platform linux/arm64 -t ipmake/nevu:latest-arm64 . --push
+        run: |
+          if [ "${{ steps.extract_version.outputs.is_release }}" = "true" ]; then
+            docker buildx build --platform linux/arm64 \
+              -t ipmake/nevu:latest-arm64 \
+              -t ipmake/nevu:${{ steps.extract_version.outputs.version }}-arm64 \
+              . --push
+          else
+            docker buildx build --platform linux/arm64 -t ipmake/nevu:latest-arm64 . --push
+          fi
 
       - name: Build and push multi-platform Docker image
-        run: docker buildx imagetools create --tag ipmake/nevu:latest ipmake/nevu:latest-amd64 ipmake/nevu:latest-arm64
+        run: |
+          if [ "${{ steps.extract_version.outputs.is_release }}" = "true" ]; then
+            # Create versioned multi-platform image
+            docker buildx imagetools create \
+              --tag ipmake/nevu:${{ steps.extract_version.outputs.version }} \
+              ipmake/nevu:${{ steps.extract_version.outputs.version }}-amd64 \
+              ipmake/nevu:${{ steps.extract_version.outputs.version }}-arm64
+            # Create latest multi-platform image
+            docker buildx imagetools create \
+              --tag ipmake/nevu:latest \
+              ipmake/nevu:latest-amd64 \
+              ipmake/nevu:latest-arm64
+          else
+            docker buildx imagetools create --tag ipmake/nevu:latest ipmake/nevu:latest-amd64 ipmake/nevu:latest-arm64
+          fi

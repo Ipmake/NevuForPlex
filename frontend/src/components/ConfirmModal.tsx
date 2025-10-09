@@ -122,7 +122,6 @@ function ConfirmModal() {
               sx={{
                 textTransform: "none",
                 fontWeight: 500,
-                borderRadius: 1.5,
               }}
             >
               Cancel
@@ -136,7 +135,6 @@ function ConfirmModal() {
               sx={{
                 textTransform: "none",
                 fontWeight: 500,
-                borderRadius: 1.5,
               }}
             >
               Confirm

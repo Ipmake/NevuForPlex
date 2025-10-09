@@ -252,7 +252,12 @@ function MetaScreen() {
 
   if (loading)
     return (
-      <Backdrop open={true}>
+      <Backdrop
+        open={true}
+        sx={{
+          zIndex: 100,
+        }}
+      >
         <CircularProgress />
       </Backdrop>
     );
@@ -617,14 +622,9 @@ function MetaScreen() {
                   variant="contained"
                   sx={{
                     height: "38px",
-                    backgroundColor: (theme) => theme.palette.background.paper,
-                    color: (theme) => theme.palette.text.primary,
                     fontWeight: "bold",
                     letterSpacing: "0.1em",
                     textTransform: "uppercase",
-                    "&:hover": {
-                      backgroundColor: (theme) => theme.palette.primary.dark,
-                    },
                     gap: 1,
                     transition: "all 0.2s ease-in-out",
                   }}
@@ -691,15 +691,9 @@ function MetaScreen() {
                     variant="contained"
                     sx={{
                       height: "38px",
-                      backgroundColor: (theme) =>
-                        theme.palette.background.paper,
-                      color: (theme) => theme.palette.text.primary,
                       fontWeight: "bold",
                       letterSpacing: "0.1em",
                       textTransform: "uppercase",
-                      "&:hover": {
-                        backgroundColor: (theme) => theme.palette.primary.main,
-                      },
                       transition: "all 0.2s ease-in-out",
                       display: "flex",
                       gap: 1,
@@ -1053,14 +1047,9 @@ function MetaPage1({
           <Button
             variant="contained"
             sx={{
-              backgroundColor: (theme) => theme.palette.background.paper,
-              color: (theme) => theme.palette.text.primary,
               fontWeight: "bold",
               letterSpacing: "0.1em",
               textTransform: "uppercase",
-              "&:hover": {
-                backgroundColor: (theme) => theme.palette.primary.main,
-              },
               transition: "all 0.2s ease-in-out",
             }}
             onClick={() => {
@@ -1073,14 +1062,9 @@ function MetaPage1({
           <Button
             variant="contained"
             sx={{
-              backgroundColor: (theme) => theme.palette.background.paper,
-              color: (theme) => theme.palette.text.primary,
               fontWeight: "bold",
               letterSpacing: "0.1em",
               textTransform: "uppercase",
-              "&:hover": {
-                backgroundColor: (theme) => theme.palette.primary.main,
-              },
               transition: "all 0.2s ease-in-out",
             }}
             onClick={() => {
@@ -1099,14 +1083,9 @@ function MetaPage1({
           <Button
             variant="contained"
             sx={{
-              backgroundColor: (theme) => theme.palette.background.paper,
-              color: (theme) => theme.palette.text.primary,
               fontWeight: "bold",
               letterSpacing: "0.1em",
               textTransform: "uppercase",
-              "&:hover": {
-                backgroundColor: (theme) => theme.palette.primary.main,
-              },
               transition: "all 0.2s ease-in-out",
             }}
             onClick={async () => {
@@ -1131,14 +1110,9 @@ function MetaPage1({
           <Button
             variant="contained"
             sx={{
-              backgroundColor: (theme) => theme.palette.background.paper,
-              color: (theme) => theme.palette.text.primary,
               fontWeight: "bold",
               letterSpacing: "0.1em",
               textTransform: "uppercase",
-              "&:hover": {
-                backgroundColor: (theme) => theme.palette.primary.main,
-              },
               transition: "all 0.2s ease-in-out",
             }}
             onClick={async () => {
@@ -1481,7 +1455,12 @@ function MetaPageReviews({ data }: { data: Plex.Metadata | undefined }) {
                         {username?.charAt(0) || "U"}
                       </Avatar>
                       <Box sx={{ flex: 1 }}>
-                        <Stack spacing={0.5} justifyContent={"flex-start"} direction={"row"} alignItems="center">
+                        <Stack
+                          spacing={0.5}
+                          justifyContent={"flex-start"}
+                          direction={"row"}
+                          alignItems="center"
+                        >
                           <Typography fontWeight="medium" noWrap>
                             {username || "Anonymous User"}
                           </Typography>
@@ -1862,14 +1841,9 @@ function RatingButton({ item }: { item: Plex.Metadata }): JSX.Element {
         variant="contained"
         sx={{
           height: "38px",
-          backgroundColor: (theme) => theme.palette.background.paper,
-          color: (theme) => theme.palette.text.primary,
           fontWeight: "bold",
           letterSpacing: "0.1em",
           textTransform: "uppercase",
-          "&:hover": {
-            backgroundColor: (theme) => theme.palette.primary.main,
-          },
           transition: "all 0.2s ease-in-out",
           display: "flex",
           gap: 1,
@@ -1980,45 +1954,6 @@ function EpisodeItem({
           Play
         </MenuItem>
         <MenuItem
-          onClick={async () => {
-            if (!item) return;
-            let state = !(!Boolean(item.viewOffset) && Boolean(item.viewCount))
-              ? "unwatched"
-              : "watched";
-
-            useConfirmModal.getState().setModal({
-              title: `Mark as ${state === "watched" ? "Unwatched" : "Watched"}`,
-              message: `Are you sure you want to mark "${item.title}" as ${
-                state === "watched" ? "Unwatched" : "Watched"
-              }?`,
-              onConfirm: async () => {
-                await setMediaPlayedStatus(
-                  !(!Boolean(item.viewOffset) && Boolean(item.viewCount)),
-                  item.ratingKey
-                );
-
-                handleClose();
-                refetchData?.();
-              },
-              onCancel: () => {
-                handleClose();
-              },
-            });
-          }}
-        >
-          <ListItemIcon>
-            {!Boolean(item.viewOffset) && Boolean(item.viewCount) ? (
-              <CheckCircleOutlineRounded fontSize="small" />
-            ) : (
-              <CheckCircleRounded fontSize="small" />
-            )}
-          </ListItemIcon>
-
-          {!Boolean(item.viewOffset) && Boolean(item.viewCount)
-            ? "Mark as Unwatched"
-            : "Mark as Watched"}
-        </MenuItem>
-        <MenuItem
           onClick={(e) => {
             e.stopPropagation();
             if (setSelectMode) setSelectMode(!selectMode);
@@ -2034,6 +1969,85 @@ function EpisodeItem({
             )}
           </ListItemIcon>
           {selectMode ? "Disable Selection" : "Enable Selection"}
+        </MenuItem>
+
+        <Divider
+          sx={{
+            my: 1,
+          }}
+        />
+
+        <MenuItem
+          onClick={async () => {
+            if (!item) return;
+
+            useConfirmModal.getState().setModal({
+              title: `Mark as Watched`,
+              message: `Are you sure you want to mark "${item.title}" as Watched?`,
+              onConfirm: async () => {
+                switch (item.type) {
+                  case "movie":
+                  case "episode":
+                    item.viewCount = 1;
+                    await setMediaPlayedStatus(true, item.ratingKey);
+                    break;
+                  case "show":
+                    item.viewedLeafCount = item.leafCount;
+                    await setMediaPlayedStatus(true, item.ratingKey);
+                    break;
+                  default:
+                    break;
+                }
+
+                handleClose();
+                refetchData?.();
+              },
+              onCancel: () => {
+                handleClose();
+              },
+            });
+          }}
+        >
+          <ListItemIcon>
+            <CheckCircleRounded fontSize="small" />
+          </ListItemIcon>
+          Mark as Watched
+        </MenuItem>
+        <MenuItem
+          onClick={async () => {
+            if (!item) return;
+
+            useConfirmModal.getState().setModal({
+              title: `Mark as Unwatched`,
+              message: `Are you sure you want to mark "${item.title}" as Unwatched?`,
+              onConfirm: async () => {
+                switch (item.type) {
+                  case "movie":
+                  case "episode":
+                    item.viewCount = 0;
+                    await setMediaPlayedStatus(false, item.ratingKey);
+                    break;
+                  case "show":
+                    item.viewedLeafCount = 0;
+                    await setMediaPlayedStatus(false, item.ratingKey);
+                    break;
+                  default:
+                    break;
+                }
+
+                handleClose();
+                refetchData?.();
+              },
+              onCancel: () => {
+                handleClose();
+              },
+            });
+          }}
+        >
+          <ListItemIcon>
+            <CheckCircleOutlineRounded fontSize="small" />
+          </ListItemIcon>
+          Mark as Unwatched
         </MenuItem>
       </Menu>
       <Box

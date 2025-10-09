@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY backend/* /app
 
-RUN apt-get update -y && apt-get install -y openssl
+RUN apt-get update -y && apt-get install -y openssl curl
 
 RUN npm install
 RUN npx prisma db push

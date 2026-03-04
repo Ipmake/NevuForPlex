@@ -11,7 +11,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { usePreviewPlayer } from "../states/PreviewPlayerState";
 import ReactPlayer from "react-player";
 import { useBigReader } from "./BigReader";
-import { WatchListButton } from "./MovieItem";
+import { HeroWatchListButton } from "./MovieItem";
 import { getBackendURL } from "../backendURL";
 import { queryBuilder } from "../plex/QuickFunctions";
 import { getTranscodeImageURL } from "../plex";
@@ -318,7 +318,7 @@ function HeroDisplay({ item }: { item: Plex.Metadata }) {
               </Typography>
             </Button>
 
-            <WatchListButton item={item} />
+            <HeroWatchListButton item={item} />
           </Box>
         </Box>
       </Box>

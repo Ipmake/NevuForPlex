@@ -50,7 +50,7 @@ import { usePreviewPlayer } from "../states/PreviewPlayerState";
 import MovieItem from "./MovieItem";
 import { useBigReader } from "./BigReader";
 import { useInView } from "react-intersection-observer";
-import { WatchListButton } from "./MovieItem";
+import { HeroWatchListButton } from "./MovieItem";
 import { alpha } from "@mui/material/styles";
 import { AnimatePresence, motion } from "framer-motion";
 import { useConfirmModal } from "./ConfirmModal";
@@ -668,7 +668,7 @@ function MetaScreen() {
                 </Button>
 
                 <Tooltip placement="top" arrow title="Watchlist">
-                  <WatchListButton item={data as Plex.Metadata} />
+                  <HeroWatchListButton item={data as Plex.Metadata} />
                 </Tooltip>
 
                 {data && <RatingButton item={data} />}

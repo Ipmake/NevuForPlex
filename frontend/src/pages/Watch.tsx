@@ -69,7 +69,7 @@ export { SessionID };
 
 const getUrl = (
   data: Plex.Metadata,
-  quality: { bitrate?: number; auto?: boolean }
+  quality: { bitrate?: number; auto?: boolean },
 ) => {
   console.log("Metadata:", data);
   const bitrate = quality
@@ -116,7 +116,7 @@ function Watch() {
   });
 
   const [volume, setVolume] = useState<number>(
-    parseInt(localStorage.getItem("volume") ?? "100")
+    parseInt(localStorage.getItem("volume") ?? "100"),
   );
 
   const lastAppliedTime = useRef<number>(0);
@@ -168,7 +168,7 @@ function Watch() {
           getLibraryMeta(Metadata?.grandparentRatingKey as string).then(
             (show) => {
               setShowMetadata(show);
-            }
+            },
           );
         }
       } else {
@@ -184,7 +184,7 @@ function Watch() {
         serverPreferences.machineIdentifier
       }/com.plexapp.plugins.library/library/metadata/${
         (Metadata as Plex.Metadata).ratingKey
-      }`
+      }`,
     ).then((queue) => {
       setPlayQueue(queue);
     });
@@ -194,7 +194,7 @@ function Watch() {
 
   const [showControls, setShowControls] = useState(true);
   useEffect(() => {
-    let timeout: NodeJS.Timeout;
+    let timeout: number;
     let whenMouseMoves = () => {
       clearTimeout(timeout);
       setShowControls(true);
@@ -273,7 +273,7 @@ function Watch() {
       if (data.time) {
         const dif = absoluteDifference(
           player.current?.getCurrentTime() ?? 0,
-          data.time
+          data.time,
         );
 
         if (dif > 2) player.current?.seekTo(data.time, "seconds");
@@ -325,7 +325,7 @@ function Watch() {
         parseInt(itemID),
         Math.floor(player.current.getDuration()) * 1000,
         buffering ? "buffering" : playing ? "playing" : "paused",
-        Math.floor(player.current.getCurrentTime()) * 1000
+        Math.floor(player.current.getCurrentTime()) * 1000,
       );
 
       if (!timelineUpdateData) return;
@@ -384,7 +384,7 @@ function Watch() {
         } = JSON.parse(audioTrackPref);
 
         console.log(
-          `Preferred Audio Track - Index: ${audioTrackPrefParsed.index}, Title: ${audioTrackPrefParsed.title}`
+          `Preferred Audio Track - Index: ${audioTrackPrefParsed.index}, Title: ${audioTrackPrefParsed.title}`,
         );
 
         const audioTrack = metadata.Media?.[0].Part[0].Stream.sort((a, b) => {
@@ -401,11 +401,11 @@ function Watch() {
 
         if (audioTrack) {
           console.log(
-            `Selected Audio Track - Index: ${audioTrack.index}, Title: ${audioTrack.extendedDisplayTitle}`
+            `Selected Audio Track - Index: ${audioTrack.index}, Title: ${audioTrack.extendedDisplayTitle}`,
           );
           await putAudioStream(
             metadata.Media?.[0].Part[0].id ?? 0,
-            audioTrack.id
+            audioTrack.id,
           );
         }
       }
@@ -417,7 +417,7 @@ function Watch() {
         } = JSON.parse(subtitleTrackPref);
 
         console.log(
-          `Preferred Subtitle Track - Index: ${subtitleTrackPrefParsed.index}, Title: ${subtitleTrackPrefParsed.title}`
+          `Preferred Subtitle Track - Index: ${subtitleTrackPrefParsed.index}, Title: ${subtitleTrackPrefParsed.title}`,
         );
 
         if (subtitleTrackPrefParsed.index === -1) {
@@ -429,7 +429,7 @@ function Watch() {
                 Math.abs(a.index - subtitleTrackPrefParsed.index) -
                 Math.abs(b.index - subtitleTrackPrefParsed.index)
               );
-            }
+            },
           ).find((stream) => {
             return (
               stream.streamType === 3 &&
@@ -439,11 +439,11 @@ function Watch() {
 
           if (subtitleTrack) {
             console.log(
-              `Selected Subtitle Track - Index: ${subtitleTrack.index}, Title: ${subtitleTrack.extendedDisplayTitle}`
+              `Selected Subtitle Track - Index: ${subtitleTrack.index}, Title: ${subtitleTrack.extendedDisplayTitle}`,
             );
             await putSubtitleStream(
               metadata.Media?.[0].Part[0].id ?? 0,
-              subtitleTrack.id
+              subtitleTrack.id,
             );
           }
         }
@@ -527,7 +527,7 @@ function Watch() {
                     return navigate(
                       `/browse/${metadata.librarySectionID}?${queryBuilder({
                         mid: metadata.ratingKey,
-                      })}`
+                      })}`,
                     );
 
                   if (!playQueue) return;
@@ -538,7 +538,7 @@ function Watch() {
                         mid: metadata.grandparentRatingKey,
                         pid: metadata.parentRatingKey,
                         iid: metadata.ratingKey,
-                      })}`
+                      })}`,
                     );
 
                   navigate(`/watch/${next.ratingKey}`);
@@ -637,8 +637,8 @@ function Watch() {
                   url.searchParams.set(
                     "t",
                     Math.floor(
-                      (player.current?.getCurrentTime() ?? 0) * 1000
-                    ).toString()
+                      (player.current?.getCurrentTime() ?? 0) * 1000,
+                    ).toString(),
                   );
                   window.location.href = url.toString();
                 } else window.location.reload();
@@ -657,14 +657,14 @@ function Watch() {
                   navigate(
                     `/browse/${metadata.librarySectionID}?${queryBuilder({
                       mid: metadata.ratingKey,
-                    })}`
+                    })}`,
                   );
 
                 if (metadata.type === "episode")
                   navigate(
                     `/browse/${metadata.librarySectionID}?${queryBuilder({
                       mid: metadata.grandparentRatingKey,
-                    })}`
+                    })}`,
                   );
               }}
             >
@@ -734,7 +734,7 @@ function Watch() {
             src={`${getTranscodeImageURL(
               metadata?.thumb as string,
               1500,
-              1500
+              1500,
             )}`}
             alt=""
             style={{
@@ -1072,7 +1072,7 @@ function Watch() {
 
                 {getCurrentVideoLevels(
                   metadata.Media[0].videoResolution,
-                  `${Math.floor(metadata.Media[0].bitrate / 1000)}Mbps`
+                  `${Math.floor(metadata.Media[0].bitrate / 1000)}Mbps`,
                 ).map((qualityOption) => (
                   <Box
                     sx={{
@@ -1112,7 +1112,7 @@ function Watch() {
                       else if (qualityOption.bitrate)
                         localStorage.setItem(
                           "quality",
-                          qualityOption.bitrate.toString()
+                          qualityOption.bitrate.toString(),
                         );
 
                       const progress = player.current?.getCurrentTime() ?? 0;
@@ -1165,7 +1165,7 @@ function Watch() {
                 })}
 
                 {metadata?.Media[0].Part[0].Stream.filter(
-                  (stream) => stream.streamType === 2 // Audio
+                  (stream) => stream.streamType === 2, // Audio
                 ).map((stream) => (
                   <Box
                     sx={{
@@ -1190,7 +1190,7 @@ function Watch() {
                       setTunePage(0);
                       await putAudioStream(
                         metadata.Media?.[0].Part[0].id ?? 0,
-                        stream.id
+                        stream.id,
                       );
 
                       await loadMetadata(itemID);
@@ -1204,7 +1204,7 @@ function Watch() {
                         JSON.stringify({
                           index: stream.index,
                           title: stream.extendedDisplayTitle,
-                        })
+                        }),
                       );
 
                       const progress = player.current?.getCurrentTime() ?? 0;
@@ -1271,7 +1271,7 @@ function Watch() {
                     setTunePage(0);
                     await putSubtitleStream(
                       metadata.Media?.[0].Part[0].id ?? 0,
-                      0
+                      0,
                     );
                     await loadMetadata(itemID);
                     await getUniversalDecision(itemID, {
@@ -1284,7 +1284,7 @@ function Watch() {
                       JSON.stringify({
                         index: -1,
                         title: "None",
-                      })
+                      }),
                     );
 
                     const progress = player.current?.getCurrentTime() ?? 0;
@@ -1298,7 +1298,7 @@ function Watch() {
                   }}
                 >
                   {metadata?.Media[0].Part[0].Stream.filter(
-                    (stream) => stream.selected && stream.streamType === 3 // Subtitle
+                    (stream) => stream.selected && stream.streamType === 3, // Subtitle
                   ).length === 0 && (
                     <CheckRounded
                       sx={{
@@ -1312,7 +1312,7 @@ function Watch() {
                 </Box>
 
                 {metadata?.Media[0].Part[0].Stream.filter(
-                  (stream) => stream.streamType === 3
+                  (stream) => stream.streamType === 3,
                 ).map((stream) => (
                   <Box
                     sx={{
@@ -1337,7 +1337,7 @@ function Watch() {
                       setTunePage(0);
                       await putSubtitleStream(
                         metadata.Media?.[0].Part[0].id ?? 0,
-                        stream.id
+                        stream.id,
                       );
 
                       await loadMetadata(itemID);
@@ -1351,7 +1351,7 @@ function Watch() {
                         JSON.stringify({
                           index: stream.index,
                           title: stream.extendedDisplayTitle,
-                        })
+                        }),
                       );
 
                       const progress = player.current?.getCurrentTime() ?? 0;
@@ -1406,7 +1406,7 @@ function Watch() {
                     (marker) =>
                       marker.startTimeOffset / 1000 <= progress &&
                       marker.endTimeOffset / 1000 >= progress &&
-                      marker.type === "intro"
+                      marker.type === "intro",
                   ).length > 0
                 }
               >
@@ -1434,7 +1434,7 @@ function Watch() {
                         boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
                         border: `1px solid ${alpha(
                           theme.palette.primary.main,
-                          0.5
+                          0.5,
                         )}`,
                       },
                     }}
@@ -1446,7 +1446,7 @@ function Watch() {
                           (marker) =>
                             marker.startTimeOffset / 1000 <= progress &&
                             marker.endTimeOffset / 1000 >= progress &&
-                            marker.type === "intro"
+                            marker.type === "intro",
                         )[0].endTimeOffset / 1000;
                       player.current.seekTo(time + 1);
                     }}
@@ -1486,7 +1486,7 @@ function Watch() {
                       marker.startTimeOffset / 1000 <= progress &&
                       marker.endTimeOffset / 1000 >= progress &&
                       marker.type === "credits" &&
-                      !marker.final
+                      !marker.final,
                   ).length > 0
                 }
               >
@@ -1514,7 +1514,7 @@ function Watch() {
                         boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
                         border: `1px solid ${alpha(
                           theme.palette.primary.main,
-                          0.5
+                          0.5,
                         )}`,
                       },
                     }}
@@ -1527,7 +1527,7 @@ function Watch() {
                             marker.startTimeOffset / 1000 <= progress &&
                             marker.endTimeOffset / 1000 >= progress &&
                             marker.type === "credits" &&
-                            !marker.final
+                            !marker.final,
                         )[0].endTimeOffset / 1000;
                       player.current.seekTo(time + 1);
                     }}
@@ -1567,7 +1567,7 @@ function Watch() {
                       marker.startTimeOffset / 1000 <= progress &&
                       marker.endTimeOffset / 1000 >= progress &&
                       marker.type === "credits" &&
-                      marker.final
+                      marker.final,
                   ).length > 0
                 }
               >
@@ -1608,6 +1608,7 @@ function Watch() {
                     height: "100vh",
                     display: "flex",
                     flexDirection: "column",
+                    overflow: "hidden",
                     background:
                       settings["DISABLE_WATCHSCREEN_DARKENING"] === "true"
                         ? "transparent"
@@ -1637,7 +1638,7 @@ function Watch() {
                             parseInt(itemID),
                             Math.floor(player.current?.getDuration() * 1000),
                             "stopped",
-                            Math.floor(player.current?.getCurrentTime() * 1000)
+                            Math.floor(player.current?.getCurrentTime() * 1000),
                           );
                         if (metadata.type === "movie")
                           navigate(
@@ -1645,7 +1646,7 @@ function Watch() {
                               metadata.librarySectionID
                             }?${queryBuilder({
                               mid: metadata.ratingKey,
-                            })}`
+                            })}`,
                           );
 
                         if (metadata.type === "episode")
@@ -1654,7 +1655,7 @@ function Watch() {
                               metadata.librarySectionID
                             }?${queryBuilder({
                               mid: metadata.grandparentRatingKey,
-                            })}`
+                            })}`,
                           );
                       }}
                       sx={{
@@ -1664,7 +1665,7 @@ function Watch() {
                         backdropFilter: "blur(20px)",
                         border: `1px solid ${alpha(
                           theme.palette.divider,
-                          0.2
+                          0.2,
                         )}`,
                         "&:hover": {
                           backgroundColor: "rgba(0,0,0,0.8)",
@@ -1676,19 +1677,38 @@ function Watch() {
                     </IconButton>
                   </Box>
 
+                  {/* Standalone Backdrop Blur Background */}
+                  <Box
+                    sx={{
+                      position: "absolute",
+                      left: 0,
+                      right: 0,
+                      height: playbackBarRef.current?.clientHeight || 200,
+                      background:
+                        "linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.9) 100%)",
+                      backdropFilter: "blur(20px)",
+                      WebkitBackdropFilter: "blur(20px)",
+                      zIndex: -1,
+                      borderTop: `1px solid ${alpha(
+                        theme.palette.divider,
+                        0.1,
+                      )}`,
+                      transition: "bottom 0.5s ease",
+                    }}
+                    style={{
+                      bottom:
+                        showControls || !playing
+                          ? 0
+                          : -(playbackBarRef.current?.clientHeight || 200),
+                    }}
+                  />
+
                   <Box
                     ref={playbackBarRef}
                     sx={{
                       mt: "auto",
                       mb: 0,
                       mx: 0,
-                      background:
-                        "linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.9) 100%)",
-                      backdropFilter: "blur(20px)",
-                      borderTop: `1px solid ${alpha(
-                        theme.palette.divider,
-                        0.1
-                      )}`,
                       display: "flex",
                       flexDirection: "column",
                       justifyContent: "space-between",
@@ -1697,11 +1717,13 @@ function Watch() {
                       px: 4,
                       py: 2,
 
+                      transition: "transform 0.5s ease",
+                    }}
+                    style={{
                       transform:
                         showControls || !playing
                           ? "translateY(0)"
                           : "translateY(100%)",
-                      transition: "transform 0.5s ease",
                     }}
                   >
                     {/* Progress Bar Section */}
@@ -1753,7 +1775,7 @@ function Watch() {
                             return getTranscodeImageURL(
                               `/library/parts/${metadata.Media[0].Part[0].id}/indexes/sd/${value}`,
                               240,
-                              135
+                              135,
                             );
                           }}
                         />
@@ -1770,7 +1792,7 @@ function Watch() {
                         }}
                       >
                         {getFormatedTime(
-                          (player.current?.getDuration() ?? 0) - progress
+                          (player.current?.getDuration() ?? 0) - progress,
                         )}
                       </Typography>
                     </Box>
@@ -1997,7 +2019,7 @@ function Watch() {
                           backdropFilter: "blur(20px)",
                           border: `1px solid ${alpha(
                             theme.palette.divider,
-                            0.1
+                            0.1,
                           )}`,
                           py: 3,
                           px: 2,
@@ -2077,9 +2099,9 @@ function Watch() {
 
                   const seekTo = params.has("t")
                     ? parseInt(params.get("t") as string)
-                    : (metadata?.viewOffset && metadata?.viewOffset > 5
+                    : ((metadata?.viewOffset && metadata?.viewOffset > 5
                         ? metadata?.viewOffset
-                        : null) ?? null;
+                        : null) ?? null);
 
                   if (!seekTo) return;
                   if (lastAppliedTime.current === seekTo) return;
@@ -2115,7 +2137,7 @@ function Watch() {
                   if (!err.error) return;
                   const message = err.error.message.replace(
                     /https?:\/\/[^\s]+/g,
-                    "Media"
+                    "Media",
                   );
 
                   setShowError(message);
@@ -2141,7 +2163,7 @@ function Watch() {
                     return navigate(
                       `/browse/${metadata.librarySectionID}?${queryBuilder({
                         mid: metadata.ratingKey,
-                      })}`
+                      })}`,
                     );
                   }
 
@@ -2153,7 +2175,7 @@ function Watch() {
                         mid: metadata.grandparentRatingKey,
                         pid: metadata.parentRatingKey,
                         iid: metadata.ratingKey,
-                      })}`
+                      })}`,
                     );
                   }
 
@@ -2309,7 +2331,7 @@ function TuneSettingTab(
   props: {
     pageNum: number;
     text: string;
-  }
+  },
 ) {
   return (
     <Box
@@ -2374,7 +2396,7 @@ export function getFormatedTime(time: number) {
 
 export function getCurrentVideoLevels(
   resolution: string,
-  extraForOriginal = "Auto"
+  extraForOriginal = "Auto",
 ) {
   const levels: {
     title: string;
@@ -2408,7 +2430,7 @@ export function getCurrentVideoLevels(
           { title: "Convert to 480p", bitrate: 1500, extra: "1.5Mbps" },
           { title: "Convert to 360p", bitrate: 750, extra: "0.7Mbps" },
           { title: "Convert to 240p", bitrate: 300, extra: "0.3Mbps" },
-        ]
+        ],
       );
       break;
     case "4k":
@@ -2458,7 +2480,7 @@ export function getCurrentVideoLevels(
           { title: "Convert to 480p", bitrate: 1500, extra: "1.5Mbps" },
           { title: "Convert to 360p", bitrate: 750, extra: "0.7Mbps" },
           { title: "Convert to 240p", bitrate: 300, extra: "0.3Mbps" },
-        ]
+        ],
       );
       break;
 
@@ -2495,7 +2517,7 @@ export function getCurrentVideoLevels(
           { title: "Convert to 480p", bitrate: 1500, extra: "1.5Mbps" },
           { title: "Convert to 360p", bitrate: 750, extra: "0.7Mbps" },
           { title: "Convert to 240p", bitrate: 300, extra: "0.3Mbps" },
-        ]
+        ],
       );
       break;
   }

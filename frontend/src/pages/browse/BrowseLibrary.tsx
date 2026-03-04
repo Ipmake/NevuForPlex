@@ -278,7 +278,10 @@ function BrowseLibrary() {
 export default BrowseLibrary;
 
 function DisplayMovieItem({ item }: { item: Plex.Metadata }) {
-  const { inView, ref } = useInView();
+  const { inView, ref } = useInView({
+    triggerOnce: true,
+    rootMargin: "200px 0px",
+  });
 
   return (
     <div
@@ -288,8 +291,9 @@ function DisplayMovieItem({ item }: { item: Plex.Metadata }) {
         transition: "opacity 0.35s ease-in-out",
       }}
     >
-      {inView && <MovieItem item={item} />}
-      {!inView && (
+      {inView ? (
+        <MovieItem item={item} />
+      ) : (
         <Box style={{ width: "100%" }}>
           <Box sx={{ width: "100%", height: "auto", aspectRatio: "16/9" }} />
           <Box sx={{ width: "100%", height: "104px" }} />

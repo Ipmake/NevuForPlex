@@ -194,7 +194,7 @@ function Watch() {
 
   const [showControls, setShowControls] = useState(true);
   useEffect(() => {
-    let timeout: NodeJS.Timeout;
+    let timeout: number;
     let whenMouseMoves = () => {
       clearTimeout(timeout);
       setShowControls(true);

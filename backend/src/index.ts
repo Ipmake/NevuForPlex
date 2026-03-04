@@ -113,8 +113,12 @@ const noVerifyHttpsAgent = new https.Agent({
             while (true) {
                 const r = await axios.get(`${process.env.PLEX_SERVER ?? "http://localhost:32400"}/identity`, {
                     timeout: 5000,
-                }).catch(() => null);
-
+                    httpAgent: process.env.DISABLE_TLS_VERIFY === "true" ? noVerifyHttpsAgent : undefined,
+                    httpsAgent: process.env.DISABLE_TLS_VERIFY === "true" ? noVerifyHttpsAgent : undefined,
+                }).catch((e) => {
+                    console.error('Error reaching PLEX_SERVER:', e.message);
+                    return null;
+                });
                 if (r && r.status === 200) {
                     status.error = false;
                     return resolve();

@@ -132,14 +132,15 @@ function BrowseLibrary() {
       <Box
         sx={{
           zIndex: 10,
-          left: "48px",
-          top: "64px",
+          left: { xs: "8px", md: "48px" },
+          top: { xs: "112px", md: "64px" },
           position: "absolute",
           display: "flex",
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "flex-start",
-          gap: 2,
+          gap: 1,
+          flexWrap: "wrap",
         }}
       >
         <Select
@@ -229,8 +230,8 @@ function BrowseLibrary() {
           justifyContent: "flex-start",
           width: "100%",
           height: "fit-content",
-          px: 6,
-          pt: "46px",
+          px: { xs: 1, md: 6 },
+          pt: { xs: "96px", md: "46px" },
           pb: 2,
         }}
       >

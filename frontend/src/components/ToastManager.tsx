@@ -162,6 +162,7 @@ export function Toast({
         });
       }, 500);
     }, duration);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

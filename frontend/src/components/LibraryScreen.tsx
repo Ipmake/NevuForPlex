@@ -44,6 +44,7 @@ function LibraryScreen() {
     window.addEventListener("keydown", handleKeyDown);
 
     return () => window.removeEventListener("keydown", handleKeyDown);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -134,14 +135,15 @@ function LibraryScreen() {
       >
         <Box
           sx={{
-            width: "130vh",
+            width: { xs: "95vw", sm: "90vw", md: "130vh" },
+            maxWidth: "100vw",
             display: "flex",
             flexDirection: "column",
             alignItems: "flex-start",
             justifyContent: "flex-start",
             backgroundColor: "#181818",
-            mt: 4,
-            padding: "20px",
+            mt: { xs: 1, md: 4 },
+            padding: { xs: "12px", md: "20px" },
 
             ...((library?.Metadata?.length ?? 0) > 10 && {
               pb: "10vh",
@@ -175,7 +177,7 @@ function LibraryScreen() {
             <Typography
               sx={{
                 color: "#fff",
-                fontSize: "2rem",
+                fontSize: { xs: "1.4rem", md: "2rem" },
                 fontWeight: "bold",
               }}
             >

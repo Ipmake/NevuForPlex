@@ -22,7 +22,7 @@ import {
   ListItemIcon,
   IconButton,
 } from "@mui/material";
-import React, { JSX, memo, use, useEffect } from "react";
+import React, { JSX, memo, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import {
   getTranscodeImageURL,
@@ -129,6 +129,7 @@ function MovieItem({
         hoverTimerRef.current = null;
       }
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hovered]);
 
   useEffect(() => {

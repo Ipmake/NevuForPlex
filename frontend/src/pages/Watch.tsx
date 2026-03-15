@@ -142,7 +142,7 @@ function Watch() {
   const [showError, setShowError] = useState<string | false>(false);
 
   const { room, socket, isHost } = useSyncSessionState();
-  const { open: syncInterfaceOpen, setOpen: setSyncInterfaceOpen } =
+  const { setOpen: setSyncInterfaceOpen } =
     useSyncInterfaceState();
 
   const [controlElementsVisible, setControlElementsVisible] = useState(false);
@@ -249,6 +249,7 @@ function Watch() {
     return () => {
       clearInterval(interval);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHost, itemID, socket]);
 
   useEffect(() => {

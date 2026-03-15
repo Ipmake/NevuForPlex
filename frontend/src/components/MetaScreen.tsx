@@ -51,7 +51,7 @@ import MovieItem from "./MovieItem";
 import { useBigReader } from "./BigReader";
 import { useInView } from "react-intersection-observer";
 import { HeroWatchListButton } from "./MovieItem";
-import { alpha, hexToRgb } from "@mui/material/styles";
+import { alpha } from "@mui/material/styles";
 import { AnimatePresence, motion } from "framer-motion";
 import { useConfirmModal } from "./ConfirmModal";
 import { PlexCommunity } from "../plex/plexCommunity";
@@ -91,6 +91,7 @@ function MetaScreen() {
     window.addEventListener("keydown", handleKeyDown);
 
     return () => window.removeEventListener("keydown", handleKeyDown);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -262,9 +263,9 @@ function MetaScreen() {
       </Backdrop>
     );
 
-  const selectedSeasonData = data?.Children?.Metadata.find(
-    (season) => season.index === selectedSeason
-  );
+  // const selectedSeasonData = data?.Children?.Metadata.find(
+  //   (season) => season.index === selectedSeason
+  // );
 
   return (
     <Backdrop

@@ -7,8 +7,12 @@ import {
   Box,
   CircularProgress,
   Divider,
+  Drawer,
   IconButton,
   InputAdornment,
+  List,
+  ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
   Menu,
@@ -17,7 +21,9 @@ import {
   SxProps,
   TextField,
   Typography,
-  Grid
+  Grid,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import React, { JSX, useEffect, useState } from "react";
 import {
@@ -33,6 +39,7 @@ import {
   FavoriteRounded,
   FullscreenRounded,
   LogoutRounded,
+  MenuRounded,
   PeopleRounded,
   SearchRounded,
   SettingsRounded,
@@ -60,6 +67,9 @@ function Appbar() {
   const { settings } = useUserSettings();
 
   const { user } = useUserSessionStore();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => {
@@ -101,7 +111,7 @@ function Appbar() {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
-        px: 6,
+        px: { xs: 2, sm: 3, md: 6 },
         py: 0,
         height: 64,
         transition: "all 0.5s ease-in-out",
@@ -236,6 +246,16 @@ S - Skip onscreen markers (intro, credits, etc)
         </MenuItem>
       </Menu>
 
+      {/* Mobile: hamburger button */}
+      {isMobile && (
+        <IconButton
+          onClick={() => setDrawerOpen(true)}
+          sx={{ color: "inherit" }}
+        >
+          <MenuRounded />
+        </IconButton>
+      )}
+
       <Box
         sx={{
           justifyContent: "flex-start",
@@ -245,63 +265,80 @@ S - Skip onscreen markers (intro, credits, etc)
         <img
           src="/logo.png"
           alt=""
-          width="100"
+          width={isMobile ? 80 : 100}
           style={{
             objectFit: "contain",
           }}
         />
 
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "flex-start",
-            gap: 4,
-            ml: 6,
-            height: "100%",
-          }}
-        >
-          <HeadLink to="/" active={location.pathname === "/"}>
-            Home
-          </HeadLink>
-          {!libraries && <CircularProgress size="small" />}
-          {libraries?.slice(0, 4).map((library) => (
-            <HeadLink
-              to={`/browse/${library.key}`}
-              key={library.key}
-              library={library}
-              active={location.pathname.includes(`/browse/${library.key}`)}
-            >
-              {library.title}
+        {/* Desktop: nav links */}
+        {!isMobile && (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "flex-start",
+              gap: 4,
+              ml: 6,
+              height: "100%",
+            }}
+          >
+            <HeadLink to="/" active={location.pathname === "/"}>
+              Home
             </HeadLink>
-          ))}
-          {libraries && libraries.length > 4 && (
-            <LibrariesDropdown libraries={libraries} />
-          )}
-        </Box>
+            {!libraries && <CircularProgress size="small" />}
+            {libraries?.slice(0, 4).map((library) => (
+              <HeadLink
+                to={`/browse/${library.key}`}
+                key={library.key}
+                library={library}
+                active={location.pathname.includes(`/browse/${library.key}`)}
+              >
+                {library.title}
+              </HeadLink>
+            ))}
+            {libraries && libraries.length > 4 && (
+              <LibrariesDropdown libraries={libraries} />
+            )}
+          </Box>
+        )}
       </Box>
 
       <Box
         sx={{
           justifyContent: "flex-end",
           ...BarSide,
-          gap: 2,
+          gap: { xs: 1, md: 2 },
         }}
       >
-        <SearchBar />
+        {/* Desktop: search bar and bookmark */}
+        {!isMobile && (
+          <>
+            <SearchBar />
+            <IconButton
+              onClick={() => {
+                setSearchParams(
+                  new URLSearchParams({
+                    bkey: `/plextv/watchlist`,
+                  })
+                );
+              }}
+            >
+              <BookmarkRounded />
+            </IconButton>
+          </>
+        )}
 
-        <IconButton
-          onClick={() => {
-            setSearchParams(
-              new URLSearchParams({
-                bkey: `/plextv/watchlist`,
-              })
-            );
-          }}
-        >
-          <BookmarkRounded />
-        </IconButton>
+        {/* Mobile: search icon */}
+        {isMobile && (
+          <IconButton
+            onClick={() => setDrawerOpen(true)}
+            sx={{ color: "inherit" }}
+          >
+            <SearchRounded />
+          </IconButton>
+        )}
 
         {room && (
           <IconButton
@@ -319,8 +356,8 @@ S - Skip onscreen markers (intro, credits, etc)
           alt=""
           onClick={(e) => setAnchorEl(e.currentTarget)}
           sx={{
-            width: 45,
-            height: 45,
+            width: { xs: 36, md: 45 },
+            height: { xs: 36, md: 45 },
             borderRadius: "4px",
             cursor: "pointer",
 
@@ -332,13 +369,91 @@ S - Skip onscreen markers (intro, credits, etc)
           }}
         />
       </Box>
+
+      {/* Mobile Drawer */}
+      <Drawer
+        anchor="left"
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        PaperProps={{
+          sx: {
+            width: 280,
+            backgroundColor: "#121212EE",
+            backdropFilter: "blur(20px)",
+          },
+        }}
+      >
+        <Box sx={{ p: 2, display: "flex", flexDirection: "column", gap: 2 }}>
+          <img src="/logo.png" alt="" width="100" style={{ objectFit: "contain" }} />
+
+          <SearchBar inDrawer onResultSelected={() => setDrawerOpen(false)} />
+
+          <Divider />
+
+          <List disablePadding>
+            <ListItem disablePadding>
+              <ListItemButton
+                selected={location.pathname === "/"}
+                onClick={() => { navigate("/"); setDrawerOpen(false); }}
+              >
+                <ListItemText primary="Home" />
+              </ListItemButton>
+            </ListItem>
+
+            {!libraries && (
+              <ListItem>
+                <CircularProgress size={20} />
+              </ListItem>
+            )}
+
+            {libraries?.map((library) => (
+              <ListItem disablePadding key={library.key}>
+                <ListItemButton
+                  selected={location.pathname.includes(`/browse/${library.key}`)}
+                  onClick={() => { navigate(`/browse/${library.key}`); setDrawerOpen(false); }}
+                >
+                  <ListItemText primary={library.title} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+
+            <Divider sx={{ my: 1 }} />
+
+            <ListItem disablePadding>
+              <ListItemButton
+                onClick={() => {
+                  setSearchParams(new URLSearchParams({ bkey: `/plextv/watchlist` }));
+                  setDrawerOpen(false);
+                }}
+              >
+                <ListItemIcon><BookmarkRounded /></ListItemIcon>
+                <ListItemText primary="Watchlist" />
+              </ListItemButton>
+            </ListItem>
+
+            {!config.DISABLE_NEVU_SYNC && (
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() => {
+                    useSyncInterfaceState.getState().setOpen(true);
+                    setDrawerOpen(false);
+                  }}
+                >
+                  <ListItemIcon><PeopleRounded /></ListItemIcon>
+                  <ListItemText primary="Watch2Gether" />
+                </ListItemButton>
+              </ListItem>
+            )}
+          </List>
+        </Box>
+      </Drawer>
     </AppBar>
   );
 }
 
 export default Appbar;
 
-function SearchBar() {
+function SearchBar({ onResultSelected, inDrawer }: { onResultSelected?: () => void; inDrawer?: boolean } = {}) {
   const [searchAnchorEl, setSearchAnchorEl] =
     React.useState<null | HTMLElement>(null);
   const searchOpen = Boolean(searchAnchorEl);
@@ -501,6 +616,7 @@ function SearchBar() {
 
               searchAnchorEl?.blur();
               setSearchAnchorEl(null);
+              onResultSelected?.();
               break;
           }
         }}
@@ -515,9 +631,12 @@ function SearchBar() {
           backgroundColor: "#121212AA",
           transition: "all 0.2s ease-in-out",
           zIndex: 11000,
+          width: inDrawer ? "100%" : undefined,
         }}
         style={{
-          ...(searchOpen
+          ...(inDrawer
+            ? { width: "100%" }
+            : searchOpen
             ? { width: "20vw", zIndex: 10000 }
             : { width: "300px" }),
         }}
@@ -539,7 +658,9 @@ function SearchBar() {
           gap: "10px",
         }}
         style={{
-          ...(searchOpen
+          ...(inDrawer
+            ? { width: "260px", zIndex: 11000 }
+            : searchOpen
             ? { width: "20vw", zIndex: 11000 }
             : { width: "300px" }),
         }}
@@ -594,6 +715,7 @@ function SearchBar() {
                     e.preventDefault();
                     searchAnchorEl?.blur();
                     setSearchAnchorEl(null);
+                    onResultSelected?.();
                     if (item.Metadata?.ratingKey) {
                       setSearchParams({
                         mid: item.Metadata.ratingKey,
@@ -668,6 +790,7 @@ function SearchBar() {
                     );
                     searchAnchorEl?.blur();
                     setSearchAnchorEl(null);
+                    onResultSelected?.();
                   }}
                 >
                   <Typography>

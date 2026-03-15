@@ -330,16 +330,6 @@ S - Skip onscreen markers (intro, credits, etc)
           </>
         )}
 
-        {/* Mobile: search icon */}
-        {isMobile && (
-          <IconButton
-            onClick={() => setDrawerOpen(true)}
-            sx={{ color: "inherit" }}
-          >
-            <SearchRounded />
-          </IconButton>
-        )}
-
         {room && (
           <IconButton
             onClick={() => {

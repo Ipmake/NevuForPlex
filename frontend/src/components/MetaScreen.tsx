@@ -51,7 +51,7 @@ import MovieItem from "./MovieItem";
 import { useBigReader } from "./BigReader";
 import { useInView } from "react-intersection-observer";
 import { HeroWatchListButton } from "./MovieItem";
-import { alpha } from "@mui/material/styles";
+import { alpha, hexToRgb } from "@mui/material/styles";
 import { AnimatePresence, motion } from "framer-motion";
 import { useConfirmModal } from "./ConfirmModal";
 import { PlexCommunity } from "../plex/plexCommunity";
@@ -334,7 +334,8 @@ function MetaScreen() {
           sx={{
             width: "100%",
             maxWidth: "100%",
-            aspectRatio: "16/9",
+            height: { xs: "50vh", sm: "auto" },
+            aspectRatio: { xs: "auto", sm: "16/9" },
             backgroundImage: `url(${getTranscodeImageURL(
               data?.art as string,
               1920,
@@ -350,11 +351,12 @@ function MetaScreen() {
             flexDirection: "column",
             alignItems: "flex-start",
             justifyContent: "flex-start",
-            padding: "1%",
-            borderTopLeftRadius: "10px",
-            borderTopRightRadius: "10px",
+            padding: { xs: 0, sm: "1%" },
+            borderTopLeftRadius: { xs: 0, sm: "10px" },
+            borderTopRightRadius: { xs: 0, sm: "10px" },
             position: "relative",
             zIndex: 0,
+            overflow: "hidden",
             userSelect: "none",
           }}
         >
@@ -363,18 +365,24 @@ function MetaScreen() {
               position: "absolute",
               // make it take up the full width of the parent
               width: "100%",
-              aspectRatio: "16/9",
+              height: "100%",
               left: 0,
               top: 0,
-              filter: "brightness(0.5)",
+              filter: "brightness(0.8)",
               opacity: previewVidPlaying ? 1 : 0,
               transition: "all 2s ease",
               backgroundColor: previewVidPlaying ? "#000000" : "transparent",
               pointerEvents: "none",
 
-              borderTopLeftRadius: "10px",
-              borderTopRightRadius: "10px",
+              borderTopLeftRadius: { xs: 0, sm: "10px" },
+              borderTopRightRadius: { xs: 0, sm: "10px" },
               overflow: "hidden",
+
+              "& video": {
+                objectFit: "cover",
+                width: "100%",
+                height: "100%",
+              },
             }}
           >
             <ReactPlayer
@@ -389,10 +397,17 @@ function MetaScreen() {
               onEnded={() => {
                 setPreviewVidPlaying(false);
               }}
+              style={{
+                width: "100%",
+                height: "100%"
+              }}
               pip={false}
               config={{
                 file: {
-                  attributes: { disablePictureInPicture: true },
+                  attributes: {
+                    disablePictureInPicture: true,
+                    style: { objectFit: "cover" },
+                  },
                 },
               }}
             />
@@ -401,31 +416,35 @@ function MetaScreen() {
 
         <Box
           sx={{
-            mt: "-15vh",
-            height: "30vh",
+            mt: { xs: "-25vh", sm: "-15vh" },
+            height: { xs: "25vh", sm: "30vh" },
             width: "100%",
             background:
               "linear-gradient(180deg, #12121600, #121216FF, #121216FF)",
             zIndex: 1,
+            pointerEvents: "none",
+            position: "relative",
           }}
         />
 
         <Box
           sx={{
             display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
+            flexDirection: { xs: "column", sm: "row" },
+            alignItems: { xs: "center", sm: "flex-end" },
             justifyContent: "center",
             width: "100%",
             padding: "0 3%",
-            mt: "-55vh",
+            mt: { xs: "-25vh", sm: "-35vh", md: "-55vh" },
             gap: "3%",
             zIndex: 2,
           }}
         >
           <Box
             sx={{
-              width: "30%",
+              width: { xs: "60%", sm: "30%" },
+              maxWidth: { xs: "280px", sm: "none" },
+              mb: { xs: 4, sm: 0 },
               borderRadius: "10px",
               overflow: "hidden",
               boxShadow: (theme) =>
@@ -454,20 +473,20 @@ function MetaScreen() {
 
           <Box
             sx={{
-              width: "70%",
+              width: { xs: "100%", sm: "70%" },
               display: "flex",
               flexDirection: "column",
-              alignItems: "flex-start",
+              alignItems: { xs: "center", sm: "flex-start" },
               justifyContent: "flex-end",
               height: "100%",
-              marginLeft: "1%",
+              marginLeft: { xs: 0, sm: "1%" },
             }}
           >
             <Box
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                alignItems: "flex-start",
+                alignItems: { xs: "center", sm: "flex-start" },
                 justifyContent: "flex-start",
                 width: "100%",
                 height: "65%",
@@ -478,13 +497,13 @@ function MetaScreen() {
                   display: "flex",
                   flexDirection: "row",
                   alignItems: "center",
-                  justifyContent: "flex-start",
-                  mb: "-10px",
+                  justifyContent: { xs: "center", sm: "flex-start" },
+                  mb: { xs: 0, sm: "-10px" },
                 }}
               >
                 <Typography
                   sx={{
-                    fontSize: "24px",
+                    fontSize: { xs: "18px", sm: "24px" },
                     fontWeight: "900",
                     letterSpacing: "0.1em",
                     color: (theme) => theme.palette.primary.main,
@@ -497,9 +516,12 @@ function MetaScreen() {
 
               <Typography
                 sx={{
-                  fontSize: "3rem",
+                  fontSize: { xs: "2rem", sm: "3rem" },
                   fontWeight: "bold",
                   mt: 0,
+                  mb: { xs: 1, sm: 0 },
+                  lineHeight: { xs: 1.2, sm: "normal" },
+                  textAlign: { xs: "center", sm: "left" },
                   color: (theme) => theme.palette.text.primary,
                 }}
               >
@@ -511,9 +533,11 @@ function MetaScreen() {
                   width: "100%",
                   display: "flex",
                   flexDirection: "row",
+                  flexWrap: "wrap",
                   alignItems: "center",
-                  justifyContent: "flex-start",
-                  mt: -1,
+                  justifyContent: { xs: "center", sm: "flex-start" },
+                  mt: 1,
+                  mb: 1,
                   gap: 1,
                 }}
               >
@@ -604,12 +628,13 @@ function MetaScreen() {
 
               <Box
                 sx={{
+                  width: "100%",
                   display: "flex",
                   flexDirection: "row",
                   alignItems: "center",
-                  justifyContent: "flex-start",
+                  justifyContent: { xs: "center", sm: "flex-start" },
                   flexWrap: "wrap",
-                  gap: 2,
+                  gap: { xs: 1, sm: 2 },
                   mt: 2,
                 }}
               >
@@ -767,7 +792,7 @@ function MetaScreen() {
                   display: "flex",
                   flexDirection: "row",
                   alignItems: "center",
-                  justifyContent: "flex-start",
+                  justifyContent: { xs: "center", sm: "flex-start" },
                   flexWrap: "wrap",
                   gap: 0.5,
                   mt: 2,
@@ -809,7 +834,7 @@ function MetaScreen() {
                       display: "flex",
                       flexDirection: "row",
                       alignItems: "center",
-                      justifyContent: "flex-start",
+                      justifyContent: { xs: "center", sm: "flex-start" },
                       flexWrap: "wrap",
                       gap: 0.5,
                     }}
@@ -841,7 +866,7 @@ function MetaScreen() {
                       display: "flex",
                       flexDirection: "row",
                       alignItems: "center",
-                      justifyContent: "flex-start",
+                      justifyContent: { xs: "center", sm: "flex-start" },
                       flexWrap: "wrap",
                       gap: 0.5,
                     }}
@@ -1040,7 +1065,8 @@ function MetaPage1({
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "flex-start",
-            gap: 2,
+            flexWrap: "wrap",
+            gap: { xs: 1, sm: 2 },
             mb: 2,
           }}
         >
@@ -1672,10 +1698,10 @@ function ActorItem({
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "flex-start",
-            gap: "20px",
+            gap: { xs: "10px", sm: "20px" },
             backgroundColor: (theme) =>
               alpha(theme.palette.background.paper, 0.4),
-            padding: "10px 20px",
+            padding: { xs: "5px 10px", sm: "10px 20px" },
             borderRadius: "10px",
             userSelect: "none",
             cursor: "pointer",
@@ -1698,7 +1724,7 @@ function ActorItem({
           <Avatar
             src={`${getTranscodeImageURL(role.thumb, 200, 200)}`}
             sx={{
-              width: "25%",
+              width: { xs: "35%", sm: "25%" },
               height: "auto",
               aspectRatio: "1/1",
               borderRadius: "50%",
@@ -1707,7 +1733,7 @@ function ActorItem({
 
           <Box
             sx={{
-              width: "75%",
+              width: { xs: "65%", sm: "75%" },
               display: "flex",
               flexDirection: "column",
               alignItems: "flex-start",
@@ -1716,21 +1742,23 @@ function ActorItem({
           >
             <Typography
               sx={{
-                fontSize: "1rem",
+                fontSize: { xs: "0.85rem", sm: "1rem" },
                 color: (theme) => theme.palette.text.primary,
                 fontWeight: "medium",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                width: "100%",
               }}
             >
               {role.tag}
             </Typography>
             <Typography
               sx={{
-                fontSize: "0.75rem",
+                fontSize: { xs: "0.65rem", sm: "0.75rem" },
                 color: (theme) => theme.palette.text.secondary,
                 overflow: "hidden",
                 textOverflow: "ellipsis",
-                display: "-webkit-box",
-                WebkitLineClamp: 1,
                 whiteSpace: "nowrap",
                 width: "100%",
               }}
@@ -2085,7 +2113,8 @@ function EpisodeItem({
       >
         <Box
           sx={{
-            width: "5%",
+            minWidth: { xs: "30px", sm: "40px" },
+            width: "auto",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -2099,7 +2128,7 @@ function EpisodeItem({
           {!selectMode && (
             <Typography
               sx={{
-                fontSize: "1.25rem",
+                fontSize: { xs: "1rem", sm: "1.25rem" },
                 fontWeight: "bold",
                 color: (theme) => theme.palette.text.primary,
                 textAlign: "center",
@@ -2121,7 +2150,8 @@ function EpisodeItem({
 
         <Box
           sx={{
-            width: "20%",
+            width: { xs: "120px", sm: "20%" },
+            flexShrink: 0,
             borderRadius: "8px",
             aspectRatio: "16/9",
             backgroundImage: `url(${getTranscodeImageURL(
@@ -2180,12 +2210,13 @@ function EpisodeItem({
 
         <Box
           sx={{
-            width: "70%",
+            flex: 1,
             display: "flex",
             flexDirection: "column",
             alignItems: "flex-start",
             justifyContent: "flex-start",
-            ml: 0.5,
+            ml: 1,
+            minWidth: 0,
           }}
         >
           <Box
@@ -2199,16 +2230,16 @@ function EpisodeItem({
           >
             <Typography
               sx={{
-                fontSize: "1.5rem",
+                fontSize: { xs: "1rem", sm: "1.5rem" },
                 fontWeight: "bold",
                 color: (theme) => theme.palette.text.primary,
-                // make it so the text doesnt resize the parent nor overflow max 3 rows
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 display: "-webkit-box",
                 WebkitLineClamp: 1,
                 WebkitBoxOrient: "vertical",
-                maxWidth: "80%",
+                flex: 1,
+                mr: 1,
               }}
             >
               {item.title}
@@ -2219,9 +2250,12 @@ function EpisodeItem({
                 display: "flex",
                 flexDirection: "row",
                 alignItems: "center",
-                justifyContent: "flex-start",
+                justifyContent: "flex-end",
                 gap: 1,
                 color: (theme) => theme.palette.text.secondary,
+                whiteSpace: "nowrap",
+                flexShrink: 0,
+                fontSize: { xs: "0.85rem", sm: "1rem" },
               }}
             >
               {getMinutes(item.duration)} Min.
@@ -2230,7 +2264,7 @@ function EpisodeItem({
 
           <Typography
             sx={{
-              fontSize: "medium",
+              fontSize: { xs: "0.85rem", sm: "1rem" },
               fontWeight: "light",
               color: (theme) => theme.palette.text.secondary,
               mt: 0.5,
@@ -2238,7 +2272,7 @@ function EpisodeItem({
               overflow: "hidden",
               textOverflow: "ellipsis",
               display: "-webkit-box",
-              WebkitLineClamp: 3,
+              WebkitLineClamp: { xs: 2, sm: 3 },
               WebkitBoxOrient: "vertical",
             }}
             title={item.summary}
@@ -2263,10 +2297,12 @@ function TabButton({
   return (
     <Typography
       sx={{
-        fontSize: "1.25rem",
+        fontSize: { xs: "0.85rem", sm: "1.25rem" },
         fontWeight: "bold",
         textTransform: "uppercase",
         letterSpacing: "0.1em",
+        whiteSpace: "nowrap",
+        flexShrink: 0,
         color: selected
           ? (theme) => theme.palette.primary.main
           : (theme) => theme.palette.text.disabled,

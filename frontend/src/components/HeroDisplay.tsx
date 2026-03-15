@@ -74,7 +74,7 @@ function HeroDisplay({ item }: { item: Plex.Metadata }) {
         sx={{
           position: "absolute",
           right: "1vw",
-          bottom: "20vh",
+          bottom: { xs: "8vh", sm: "15vh", md: "20vh" },
           opacity: previewVidURL ? 1 : 0,
           transition: "all 1s ease",
           zIndex: 2,
@@ -182,9 +182,10 @@ function HeroDisplay({ item }: { item: Plex.Metadata }) {
 
         <Box
           sx={{
-            ml: 10,
-            mb: "40vh",
+            ml: { xs: 2, sm: 5, md: 10 },
+            mb: { xs: "12vh", sm: "25vh", md: "40vh" },
             zIndex: 1,
+            mr: { xs: 2, sm: 4, md: 0 },
           }}
         >
           <Box
@@ -207,7 +208,7 @@ function HeroDisplay({ item }: { item: Plex.Metadata }) {
             /> */}
             <Typography
               sx={{
-                fontSize: "24px",
+                fontSize: { xs: "16px", md: "24px" },
                 fontWeight: "900",
                 letterSpacing: "0.1em",
                 color: (theme) => theme.palette.primary.main,
@@ -219,7 +220,7 @@ function HeroDisplay({ item }: { item: Plex.Metadata }) {
           </Box>
           <Typography
             sx={{
-              fontSize: "3rem",
+              fontSize: { xs: "1.8rem", sm: "2.5rem", md: "3rem" },
               fontWeight: "bold",
             }}
           >
@@ -229,7 +230,7 @@ function HeroDisplay({ item }: { item: Plex.Metadata }) {
             sx={{
               fontSize: "medium",
               fontWeight: "light",
-              maxWidth: "35vw",
+              maxWidth: { xs: "85vw", sm: "60vw", md: "35vw" },
 
               // make the text max 4 lines long and add ellipsis
               display: "-webkit-box",
@@ -251,13 +252,13 @@ function HeroDisplay({ item }: { item: Plex.Metadata }) {
           <Box
             sx={{
               display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
+              flexDirection: { xs: "column", sm: "row" },
+              alignItems: { xs: "flex-start", sm: "center" },
               justifyContent: "flex-start",
               mt: 4,
               gap: 2,
               ml: 0,
-              height: "36.5px",
+              height: { xs: "auto", sm: "36.5px" },
             }}
           >
             <Button
@@ -327,7 +328,7 @@ function HeroDisplay({ item }: { item: Plex.Metadata }) {
           width: "100%",
           height: "40vh",
           position: "absolute",
-          top: "65vh",
+          top: { xs: "55vh", sm: "60vh", md: "65vh" },
 
           backgroundImage:
             "linear-gradient(180deg, #00000000, #000000AA, #000000FF)",

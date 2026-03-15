@@ -282,22 +282,54 @@ function MetaScreen() {
     >
       <Box
         sx={{
-          width: "130vh",
+          width: { xs: "100vw", sm: "90vw", md: "130vh" },
+          maxWidth: "100vw",
           display: "flex",
           flexDirection: "column",
           alignItems: "flex-start",
           justifyContent: "flex-start",
           backgroundColor: "#121216",
-          mt: 4,
+          mt: { xs: 0, sm: 4 },
           pb: "40vh",
+          position: "relative",
 
-          borderTopLeftRadius: "10px",
-          borderTopRightRadius: "10px",
+          borderTopLeftRadius: { xs: 0, sm: "10px" },
+          borderTopRightRadius: { xs: 0, sm: "10px" },
         }}
         onClick={(e) => {
           e.stopPropagation();
         }}
       >
+        {/* Close button — always on top of everything */}
+        <Box
+          sx={{
+            position: "absolute",
+            top: 8,
+            right: 8,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 1,
+            zIndex: 50,
+          }}
+        >
+          <IconButton
+            sx={{ backgroundColor: "#000000BB" }}
+            onClick={() => setSearchParams(new URLSearchParams())}
+          >
+            <CloseRounded fontSize="medium" />
+          </IconButton>
+          <IconButton
+            sx={{
+              backgroundColor: "#000000BB",
+              opacity: previewVidURL ? 1 : 0,
+              transition: "all 1s ease",
+            }}
+            onClick={() => setMetaScreenPlayerMuted(!MetaScreenPlayerMuted)}
+          >
+            {MetaScreenPlayerMuted ? <VolumeOffRounded /> : <VolumeUpRounded />}
+          </IconButton>
+        </Box>
         <Box
           sx={{
             width: "100%",
@@ -364,44 +396,6 @@ function MetaScreen() {
                 },
               }}
             />
-          </Box>
-          <Box
-            sx={{
-              ml: "auto",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "flex-start",
-              gap: 2,
-            }}
-          >
-            <IconButton
-              sx={{
-                backgroundColor: "#00000088",
-              }}
-              onClick={() => {
-                setSearchParams(new URLSearchParams());
-              }}
-            >
-              <CloseRounded fontSize="medium" />
-            </IconButton>
-
-            <IconButton
-              sx={{
-                backgroundColor: "#00000088",
-                opacity: previewVidURL ? 1 : 0,
-                transition: "all 1s ease",
-              }}
-              onClick={() => {
-                setMetaScreenPlayerMuted(!MetaScreenPlayerMuted);
-              }}
-            >
-              {MetaScreenPlayerMuted ? (
-                <VolumeOffRounded />
-              ) : (
-                <VolumeUpRounded />
-              )}
-            </IconButton>
           </Box>
         </Box>
 
@@ -614,6 +608,7 @@ function MetaScreen() {
                   flexDirection: "row",
                   alignItems: "center",
                   justifyContent: "flex-start",
+                  flexWrap: "wrap",
                   gap: 2,
                   mt: 2,
                 }}
@@ -773,6 +768,7 @@ function MetaScreen() {
                   flexDirection: "row",
                   alignItems: "center",
                   justifyContent: "flex-start",
+                  flexWrap: "wrap",
                   gap: 0.5,
                   mt: 2,
                 }}
@@ -814,6 +810,7 @@ function MetaScreen() {
                       flexDirection: "row",
                       alignItems: "center",
                       justifyContent: "flex-start",
+                      flexWrap: "wrap",
                       gap: 0.5,
                     }}
                   >
@@ -845,9 +842,8 @@ function MetaScreen() {
                       flexDirection: "row",
                       alignItems: "center",
                       justifyContent: "flex-start",
+                      flexWrap: "wrap",
                       gap: 0.5,
-                      whiteSpace: "wrap",
-                      overflow: "hidden",
                     }}
                   >
                     {subTitles && subTitles.length > 0 && (
@@ -921,8 +917,12 @@ function MetaScreen() {
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "flex-start",
-              gap: 4,
+              gap: { xs: 1, md: 4 },
               mb: "10px",
+              overflowX: "auto",
+              flexShrink: 0,
+              "&::-webkit-scrollbar": { display: "none" },
+              scrollbarWidth: "none",
             }}
           >
             <TabButton

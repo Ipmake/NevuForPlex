@@ -39,7 +39,7 @@ function Library() {
         sx={{
           zIndex: 5,
           mb: 2,
-          right: "48px",
+          right: { xs: "8px", sm: "24px", md: "48px" },
           top: "64px",
           position: "absolute",
           opacity: 0.7,

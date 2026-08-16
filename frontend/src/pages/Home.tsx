@@ -68,6 +68,7 @@ export default function Home() {
     }
 
     fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [settings]);
   const navigate = useNavigate();
 

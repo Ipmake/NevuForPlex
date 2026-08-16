@@ -57,6 +57,7 @@ function HeroDisplay({ item }: { item: Plex.Metadata }) {
       clearTimeout(timeout);
       window.removeEventListener("scroll", onScroll);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -73,8 +74,8 @@ function HeroDisplay({ item }: { item: Plex.Metadata }) {
       <Box
         sx={{
           position: "absolute",
-          right: "1vw",
-          bottom: "20vh",
+          right: "2vw",
+          bottom: { xs: "20vh", sm: "15vh", md: "20vh" },
           opacity: previewVidURL ? 1 : 0,
           transition: "all 1s ease",
           zIndex: 2,
@@ -137,7 +138,6 @@ function HeroDisplay({ item }: { item: Plex.Metadata }) {
             // make it take up the full width of the parent
             width: "100%",
             height: "100vh",
-            aspectRatio: "16/9",
             left: 0,
             top: 0,
             filter: "brightness(0.5)",
@@ -182,9 +182,10 @@ function HeroDisplay({ item }: { item: Plex.Metadata }) {
 
         <Box
           sx={{
-            ml: 10,
-            mb: "40vh",
+            ml: { xs: 2, sm: 5, md: 10 },
+            mb: { xs: "30vh", sm: "25vh", md: "40vh" },
             zIndex: 1,
+            mr: { xs: 2, sm: 4, md: 0 },
           }}
         >
           <Box
@@ -207,7 +208,7 @@ function HeroDisplay({ item }: { item: Plex.Metadata }) {
             /> */}
             <Typography
               sx={{
-                fontSize: "24px",
+                fontSize: { xs: "16px", md: "24px" },
                 fontWeight: "900",
                 letterSpacing: "0.1em",
                 color: (theme) => theme.palette.primary.main,
@@ -219,7 +220,7 @@ function HeroDisplay({ item }: { item: Plex.Metadata }) {
           </Box>
           <Typography
             sx={{
-              fontSize: "3rem",
+              fontSize: { xs: "1.8rem", sm: "2.5rem", md: "3rem" },
               fontWeight: "bold",
             }}
           >
@@ -229,7 +230,7 @@ function HeroDisplay({ item }: { item: Plex.Metadata }) {
             sx={{
               fontSize: "medium",
               fontWeight: "light",
-              maxWidth: "35vw",
+              maxWidth: { xs: "85vw", sm: "60vw", md: "35vw" },
 
               // make the text max 4 lines long and add ellipsis
               display: "-webkit-box",
@@ -252,12 +253,13 @@ function HeroDisplay({ item }: { item: Plex.Metadata }) {
             sx={{
               display: "flex",
               flexDirection: "row",
+              flexWrap: "wrap",
               alignItems: "center",
               justifyContent: "flex-start",
-              mt: 4,
-              gap: 2,
+              mt: { xs: 2.5, sm: 4 },
+              gap: { xs: 1.5, sm: 2 },
               ml: 0,
-              height: "36.5px",
+              minHeight: "36.5px",
             }}
           >
             <Button
@@ -325,9 +327,10 @@ function HeroDisplay({ item }: { item: Plex.Metadata }) {
       <Box
         sx={{
           width: "100%",
-          height: "40vh",
+          height: { xs: "50vh", sm: "45vh", md: "40vh" },
           position: "absolute",
-          top: "65vh",
+          bottom: 0,
+          left: 0,
 
           backgroundImage:
             "linear-gradient(180deg, #00000000, #000000AA, #000000FF)",
@@ -336,6 +339,7 @@ function HeroDisplay({ item }: { item: Plex.Metadata }) {
           backgroundRepeat: "no-repeat",
           backgroundColor: "transparent",
           zIndex: 1,
+          pointerEvents: "none",
         }}
       />
     </Box>

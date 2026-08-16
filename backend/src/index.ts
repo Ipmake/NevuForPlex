@@ -551,8 +551,8 @@ app.post('/proxy', (req, res) => {
 
     axios(config)
         .then((response) => {
-            res.set('Content-Type', response.headers['content-type']);
-            res.set('Content-Length', response.headers['content-length']);
+            res.set('Content-Type', response.headers['content-type'] as string);
+            res.set('Content-Length', response.headers['content-length'] as string);
             // res.set('Cache-Control', 'public, max-age=31536000');
             res.status(response.status).send(response.data);
         })
@@ -595,8 +595,8 @@ app.get('/proxy', async (req, res) => {
     };
 
     axios(config).then((response) => {
-        res.set('Content-Type', response.headers['content-type']);
-        res.set('Content-Length', response.headers['content-length']);
+        res.set('Content-Type', response.headers['content-type'] as string);
+        res.set('Content-Length', response.headers['content-length'] as string);
         // res.set('Cache-Control', 'public, max-age=31536000');
         response.data.pipe(res);
     }).catch((error) => {

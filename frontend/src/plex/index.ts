@@ -4,6 +4,8 @@ import './plex.d.ts'
 import { getBackendURL } from "../backendURL";
 import { platformCache } from "../common/DesktopApp";
 
+axios.defaults.headers.common['accept'] = 'application/json';
+
 export async function getAllLibraries(): Promise<Plex.LibarySection[]> {
     const res = await authedGet(`/library/sections`);
     return res.MediaContainer.Directory;
@@ -236,9 +238,16 @@ export function getTranscodeImageURL(url: string, width: number, height: number)
  * @returns {Promise<Plex.TokenData>} A promise that resolves to the token data.
  */
 export async function getAccessToken(pin: string): Promise<Plex.TokenData> {
-    const res = await axios.get(`https://plex.tv/api/v2/pins/${pin}?${queryBuilder({
-        "X-Plex-Client-Identifier": localStorage.getItem("clientID")
-    })}`)
+    const res = await axios.get(
+      `https://plex.tv/api/v2/pins/${pin}?${queryBuilder({
+        "X-Plex-Client-Identifier": localStorage.getItem("clientID"),
+      })}`,
+      {
+        headers: {
+          accept: "application/json",
+        },
+      },
+    );
     return res.data;
 }
 
@@ -256,7 +265,11 @@ export async function getPin(): Promise<Plex.TokenData> {
     const res = await axios.post(`https://plex.tv/api/v2/pins?${queryBuilder({
         "X-Plex-Client-Identifier": localStorage.getItem("clientID"),
         "X-Plex-Product": "NEVU"
-    })}`)
+    })}`, undefined, {
+        headers: {
+            accept: "application/json",
+        },
+    });
     return res.data;
 }
 

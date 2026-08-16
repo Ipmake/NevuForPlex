@@ -30,6 +30,25 @@ function MovieItemSlider({
   );
 
   const [currPage, setCurrPage] = React.useState(0);
+  const touchStartX = React.useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const delta = touchStartX.current - e.changedTouches[0].clientX;
+    touchStartX.current = null;
+    if (Math.abs(delta) < 50) return; // ignore small movements
+    if (delta > 0) {
+      // swiped left → next page
+      setCurrPage((p) => (p + 1 > Math.ceil(itemCount / itemsPerPage) - 1 ? 0 : p + 1));
+    } else {
+      // swiped right → prev page
+      setCurrPage((p) => (p - 1 < 0 ? Math.ceil(itemCount / itemsPerPage) - 1 : p - 1));
+    }
+  };
 
   const calculateItemsPerPage = (width: number) => {
     if (width < 400) return 1;
@@ -135,7 +154,7 @@ function MovieItemSlider({
           <Typography
             variant="h4"
             sx={{
-              fontSize: "2rem",
+              fontSize: { xs: "1.3rem", sm: "1.6rem", md: "2rem" },
               fontWeight: "bold",
               mb: "0px",
             }}
@@ -208,10 +227,13 @@ function MovieItemSlider({
           overflowY: "visible",
           position: "relative",
         }}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
       >
         <Box
           sx={{
-            width: "calc(2.5vw)",
+            width: { xs: "40px", sm: "calc(2.5vw)" },
+            minWidth: { sm: "30px" },
             height: "16vh",
             position: "absolute",
             left: "0px",
@@ -253,7 +275,7 @@ function MovieItemSlider({
             justifyContent: "center",
             width: `auto`,
             gap: "10px",
-            transition: "transform 1s ease",
+            transition: { xs: "transform 0.35s ease", md: "transform 1s ease" },
           }}
         >
           {items?.slice(0, itemsPerPage * 5).map((item, i) => {
@@ -293,7 +315,8 @@ function MovieItemSlider({
         </Box>
         <Box
           sx={{
-            width: "calc(2.5vw)",
+            width: { xs: "40px", sm: "calc(2.5vw)" },
+            minWidth: { sm: "30px" },
             height: "16vh",
             position: "absolute",
             right: "0px",

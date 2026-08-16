@@ -1,4 +1,4 @@
-import { Box, CircularProgress, ButtonGroup, Button } from "@mui/material";
+import { Box, CircularProgress } from "@mui/material";
 import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import HeroDisplay from "../../components/HeroDisplay";

@@ -5,7 +5,7 @@ import { useSyncInterfaceState } from "../components/PerPlexedSync";
 import { useNavigate } from "react-router-dom";
 
 function WaitingRoom() {
-  const [loading, setLoading] = React.useState(true);
+  const [loading, ] = React.useState(true);
 
   const { room, isHost, socket } = useSyncSessionState();
   const { setOpen } = useSyncInterfaceState();
